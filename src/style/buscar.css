@@ -1,0 +1,13 @@
+.book-box{
+    float: left;
+    border: solid 2px red;
+    width: 60%;
+    height: 100%;
+}
+
+.search-box{
+    float: right;
+    border: solid 2px blue;
+    width: 40%;
+    height: 100%;
+}
