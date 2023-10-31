@@ -15,7 +15,7 @@ function App() {
           <Route path="/generar" Component={Generar} />
           <Route path="/buscarLibro" Component={Buscarlibro} />
           <Route path="/Buscar" Component={Buscar} />
-          <Route path="/" Component={Generar} />
+          <Route path="/" Component={Buscarlibro} />
         </Routes>
       </div>
     </Router>
