@@ -1,9 +1,13 @@
 .book{
     border: solid 1px black;
     border-radius: 0.5em;
-    width: 90%;
-    height: 13em;
+    width: 93%;
+    height: 14em;
     break-inside: avoid;
     margin-bottom: 10px;
-    
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
 }
+

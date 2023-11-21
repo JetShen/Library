@@ -2,11 +2,12 @@ import Box from "./box";
 import "../style/buscar.css"
 import Book from "./book";
 
+
 const books = [
     {
       title: 'Libro 1',
       category: 'Ficción',
-      imageUrl: 'url_de_la_imagen_1.jpg',
+      imageUrl: '/books/Python.jpg',
     },
     {
       title: 'Libro 2',
