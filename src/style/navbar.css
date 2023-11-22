@@ -28,9 +28,21 @@
     justify-content: center;
     align-items: center;
     text-decoration: none;
-    color: black;
+    color: white;
     font-size: 1.5rem;
-    width: 100%;
+    width: 15em;
+    height: 1.5em;
+    border-radius: 0.3em;
+    background-color: rgb(87, 87, 255);
+    box-shadow: 0px 10px 20px -4px rgba(0,0,0,0.63);
+    
+    transition: ease-in-out 0.4s;
+
+}
+.navbar-box a:hover{
+    background-color: rgb(0, 0, 255);
+    box-shadow: 0px 10px 20px -4px rgba(0, 0, 255, 0.5);
+
 }
 
 .inner-box{
@@ -44,13 +56,13 @@
 }
 
 .inner-box li{
-    display: flex;
+    /* display: flex;
     justify-content: center;
     align-items: center;
     background-color: #e2e4e5;
     padding: 0.4em; 
     border-radius: 0.5em;
-    width: 30%;
+    width: 30%; */
 }
 
 

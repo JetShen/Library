@@ -115,7 +115,10 @@ function Buscarlibro(){
                 </ul>
             </div>
             <div className="search-box">
-                <input type="text" name="query" id="query" className="Query" placeholder="Escriba el nombre del Libro"/>
+                <div className="boxQuery">
+                    <input type="text" name="query" id="query" className="Query" placeholder="Escriba el nombre del Libro"/>
+                    <button className="addBook">Añadir Libro</button>
+                </div>
                 <div className="category"></div>
             </div>
         </Box>
