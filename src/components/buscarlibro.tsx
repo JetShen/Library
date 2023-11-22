@@ -5,7 +5,7 @@ import Book from "./book";
 
 const books = [
     {
-      title: 'Libro 1',
+      title: 'jasjdaksdka asdasd asdasd as asd',
       category: 'Ficción',
       imageUrl: '/books/Python.jpg',
     },

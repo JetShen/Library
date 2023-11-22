@@ -28,8 +28,10 @@ function Book({ title, category, imageUrl }: { title: string; category: string; 
 
   return (
     <div className="book" style={{ backgroundImage: backgroundStyle }}>
-      <p>{title}</p>
-      <span>{category}</span>
+      <div className="info">
+        <p className='title'>{title}</p>
+        <p className='category'>{category}</p>
+      </div>
     </div>
   );
 }
