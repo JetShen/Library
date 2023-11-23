@@ -1,5 +1,4 @@
 .inner{
-    position: relative; 
     width: 100%;
     height: 100%;
     display: flex;
@@ -9,10 +8,9 @@
 }
 
 .querybox{
-    position: relative;
     top: 0;
     width: 40%;
-    height: 10%;
+    min-height: 10%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -46,14 +44,18 @@
 }
 
 .prestamos{
-    border: 2px solid red;
-    position: relative;
-    bottom: 0;
     margin-top: 2em;
     width: 95%;
-    height: 90%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+    height: 85%;
+    overflow-y: auto;
+}
+/* to-do: fix the scroll */
+.prestamos-list{ 
+    width: 100%;
+    height: 100%;
+    column-count: 5;
+    column-gap: 0.5em;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }

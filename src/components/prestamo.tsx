@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { tauri } from '@tauri-apps/api';
-import '../style/book.css';
 import { currenPath } from '../script/gobal';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
+import '../style/prestamo.css';
+
 // rut, titulo, isbn, fechaTermino
 
-function Prestamo({rut, titulo, isbn, fechaTermino} : {rut: string,titulo : string, isbn: string, fechaTermino: string } ) {
+function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: string, fechaTermino: string, imageUrl: string } ) {
   const [backgroundStyle, setBackgroundStyle] = useState<string>('');
 
   const handleExist = async () => {
@@ -28,13 +29,17 @@ function Prestamo({rut, titulo, isbn, fechaTermino} : {rut: string,titulo : stri
   }, []);
 
   return (
-    <div className="book" style={{ backgroundImage: backgroundStyle }}>
+    <div className="item" style={{ backgroundImage: backgroundStyle }}>
       <div className="info">
-        <p className='title'>{title}</p>
-        <p className='category'>{category}</p>
+        <p className='title'>{titulo}</p>
+        <span className='inner-Info'>
+          <p className='rut'>{rut}</p>
+          <p className='fecha'>{fechaTermino}</p>
+        </span>
+        <button className='btnDevolver'>Devolver</button>
       </div>
     </div>
   );
 }
 
-export default Book;
+export default Prestamo;

@@ -1,5 +1,6 @@
 import Box from "./box";
 import '../style/buscarPrestamo.css'
+import Prestamo from "./prestamo";
 
 // rut, titulo, isbn, fechaTermino
 
@@ -88,7 +89,17 @@ function Buscar(){
                     <button className="btnBuscar">Buscar</button>
                 </div>
                 <div className="prestamos">
-                    
+                    <ul className="prestamos-list">
+                        {prestamos.map((prestamo, index) => (
+                            <Prestamo
+                            key={index}
+                            rut={prestamo.rut}
+                            titulo={prestamo.titulo}
+                            fechaTermino={prestamo.fechaTermino}
+                            imageUrl="/books/default.png"
+                            />
+                        ))}         
+                    </ul>
                 </div>
             </div>
         </Box>
