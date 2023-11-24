@@ -10,6 +10,7 @@
 
 .search-box{
     display: flex;
+    flex-direction: column;
     float: right;
     border: solid 2px black;
     border-radius: 0.5em;
@@ -30,7 +31,7 @@
 
 .book-list {
     column-count: 4;
-    column-gap: 5px;
+    column-gap: 0.5em;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -66,3 +67,43 @@
     box-shadow: 0px 10px 20px -4px rgba(0, 0, 255, 0.5);
     cursor: pointer;
 }
+
+.categoryBox{
+    width: 90%;
+    height: 80%;
+    margin: 1em 0 0 1em;
+    overflow-y: auto;
+}
+
+.categoryList{
+    text-align: center;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    column-count: 3;
+    column-gap: 0.5em;
+}
+
+.categoryItem{
+    border: none;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    margin: 0.5em;
+    font-size: 1.2em;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    transition: ease-in-out 0.4s;
+}
+.categoryItem:hover{
+    cursor: pointer;
+    box-shadow: 0px 10px 20px -4px rgba(0, 0, 255, 0.5);
+
+}
+
+.categoryItem:focus {
+    outline: none;
+    box-shadow: 0px 10px 20px -4px rgba(0, 0, 255, 0.5);
+
+  }
