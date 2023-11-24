@@ -30,11 +30,11 @@ function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: 
 
   return (
     <div className="item" style={{ backgroundImage: backgroundStyle }}>
-      <div className="info">
-        <p className='title'>{titulo}</p>
+      <div className="info-prestamo">
+        <p className='titulo'>{titulo}</p>
         <span className='inner-Info'>
-          <p className='rut'>{rut}</p>
-          <p className='fecha'>{fechaTermino}</p>
+          <p className='rut'>Rut:{rut}</p>
+          <p className='fecha'>Fecha:{fechaTermino}</p>
         </span>
         <button className='btnDevolver'>Devolver</button>
       </div>
