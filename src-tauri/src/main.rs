@@ -4,6 +4,8 @@ use std::env;
 use std::path::PathBuf;
 use std::fs;
 
+mod sqlcmd;
+
 #[tauri::command]
 fn currentpath() -> String {
     let new_path = PathBuf::from(env::current_dir().unwrap());
@@ -13,8 +15,13 @@ fn currentpath() -> String {
 #[tauri::command]
 fn bookdir() -> Result<(), String>{
     let mut path = currentpath();
+    let mut db_path = path.clone();
+    db_path.push_str("/DataBase");
+    let _ = fs::create_dir_all(db_path);
+
     path.push_str("/books");
     let _ = fs::create_dir_all(path);
+    let _ = sqlcmd::create::create();
     Ok(())
 }
 
