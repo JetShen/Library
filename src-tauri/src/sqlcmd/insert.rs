@@ -11,7 +11,8 @@ pub fn addbook(isbn: String, urlportada: String, titulo: String, autor: String, 
     Ok(())
 }
 
-pub fn adduser(rut: String, nombre: String, apellido: String, correo: String, telefono: String, direccion: String) -> Result<(), rusqlite::Error>{
+#[tauri::command]
+pub fn adduser(rut: String, nombre: String, apellido: String, correo: String, telefono: String, direccion: String) -> Result<(), String>{
     let conn = conn();
     conn.execute(
         "INSERT INTO Usuario (Rut, Nombre, Apellido, Correo, Telefono, Direccion) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
@@ -20,10 +21,11 @@ pub fn adduser(rut: String, nombre: String, apellido: String, correo: String, te
     Ok(())
 }
 
-pub fn addloan( rutusuario: String, nombrelibro: String, isbn: String, fechaprestamo: String, terminoprestamo: String, rutbibliotecario: String) -> Result<(), rusqlite::Error>{
+#[tauri::command]
+pub fn addloan( rutusuario: String, nombrelibro: String, isbn: String, fechaprestamo: String, terminoprestamo: String, rutbibliotecario: String) -> Result<(), String>{
     let conn = conn();
     conn.execute(
-        "INSERT INTO Prestamo (Usuario_Rut, NombreLibro, ISBN, FechaPrestamo, TerminoPrestamo, RutBibliotecario) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        "INSERT INTO Prestamo (Usuario_Rut, NombreLibro, ISBN, FechaPrestamo, TerminoPrestamo, RutBibliotecario) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
         [rutusuario, nombrelibro, isbn, fechaprestamo, terminoprestamo, rutbibliotecario],
     ).unwrap();
     Ok(())
