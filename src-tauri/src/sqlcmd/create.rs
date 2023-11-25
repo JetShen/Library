@@ -4,10 +4,17 @@ use rusqlite::{Connection, Result};
 
 use crate::currentpath;
 
+pub fn conn() -> Connection {
+    let mut path = currentpath();
+    path.push_str("/DataBase");
+    path.push_str("/biblioteca.db");
+    Connection::open(path).unwrap()
+}
+
+
+
 pub fn create() -> Result<(), rusqlite::Error> {
-    let mut db_path = currentpath();
-    db_path.push_str("/DataBase/main.db");
-    let conn = Connection::open(db_path)?;
+    let conn = conn();
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS Usuario (
@@ -36,7 +43,7 @@ pub fn create() -> Result<(), rusqlite::Error> {
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS Prestamo (
-            idPrestamo INTEGER PRIMARY KEY,
+            idPrestamo INTEGER PRIMARY KEY AUTOINCREMENT,
             Usuario_Rut TEXT NOT NULL,
             NombreLibro TEXT NOT NULL,
             ISBN TEXT NOT NULL,

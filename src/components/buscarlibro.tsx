@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import Box from "./box";
 import "../style/buscar.css"
 import Book from "./book";
-
+import Modal from './modal'; 
 
 const books = [
     {
@@ -99,6 +100,15 @@ const books = [
 
 
 function Buscarlibro(){
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
 
     return(
         <Box>
@@ -117,7 +127,7 @@ function Buscarlibro(){
             <div className="search-box">
                 <div className="boxQuery">
                     <input type="text" name="query" id="query" className="Query" placeholder="Escriba el nombre del Libro"/>
-                    <button className="addBook">Añadir Libro</button>
+                    <button className="addBook" onClick={openModal}>Añadir Libro</button>
                 </div>
                 <div className="categoryBox">
                     <ul className="categoryList">
@@ -146,6 +156,7 @@ function Buscarlibro(){
                     </ul>
                 </div>
             </div>
+            <Modal isOpen={isModalOpen} onClose={closeModal} />
         </Box>
     );
 }

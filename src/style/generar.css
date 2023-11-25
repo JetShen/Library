@@ -30,10 +30,17 @@
 }
 
 .Generar{
+
     border: none;
     background-color: blue;
     color: white;
     border-radius: 0.5em;
-    padding: 0.2em;
+    padding: 0.5em;
     font-size: 1.5em;
+    transition: ease-in-out 0.4s;
+}
+
+.Generar:hover{
+    background-color: rgb(87, 87, 255);
+    cursor: pointer;
 }
