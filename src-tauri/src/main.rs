@@ -4,7 +4,7 @@ use std::env;
 use std::path::PathBuf;
 use std::fs;
 
-use crate::sqlcmd::{insert::{addbook, adduser, addloan}, select::getuser};
+use crate::sqlcmd::{insert::{addbook, adduser, addloan}, select::{getuser, getallbooks}};
 
 mod sqlcmd;
 
@@ -30,6 +30,7 @@ fn bookdir() -> Result<(), String>{
 #[tauri::command]
 fn verifypath(path: String) -> bool {
     let mut current_path = currentpath();
+    current_path.push_str("/books/");
     current_path.push_str(&path);
 
     if fs::metadata(&current_path).is_ok() {
@@ -42,7 +43,7 @@ fn verifypath(path: String) -> bool {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![currentpath, verifypath, bookdir, addbook, adduser, addloan, getuser])
+        .invoke_handler(tauri::generate_handler![currentpath, verifypath, bookdir, addbook, adduser, addloan, getuser, getallbooks])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

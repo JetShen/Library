@@ -10,12 +10,13 @@ function Book({ title, category, imageUrl }: { title: string; category: string; 
   const handleExist = async () => {
     try {
       const mainPath = await currenPath;
+      console.log("ruta:",mainPath+'/books/');
       const res = await tauri.invoke('verifypath', { path: imageUrl });
       if (res === true) {
-        setBackgroundStyle(`url(${convertFileSrc(mainPath + imageUrl)})`);
+        setBackgroundStyle(`url(${convertFileSrc(mainPath+'/books/' + imageUrl)})`);
       } else {
         console.warn("Image not found. Showing default image.");
-        setBackgroundStyle(`url(${convertFileSrc(mainPath + '/books/default.png')})`);
+        setBackgroundStyle(`url(${convertFileSrc(mainPath + 'default.png')})`);
       }
     } catch (error) {
       console.error("Error verifying the existence of the image:", error);
