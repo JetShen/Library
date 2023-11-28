@@ -4,7 +4,6 @@ import { currenPath } from '../script/gobal';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import '../style/prestamo.css';
 
-// rut, titulo, isbn, fechaTermino
 
 function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: string, fechaTermino: string, imageUrl: string } ) {
   const [backgroundStyle, setBackgroundStyle] = useState<string>('');
@@ -14,10 +13,10 @@ function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: 
       const mainPath = await currenPath;
       const res = await tauri.invoke('verifypath', { path: imageUrl });
       if (res === true) {
-        setBackgroundStyle(`url(${convertFileSrc(mainPath + imageUrl)})`);
+        setBackgroundStyle(`url(${convertFileSrc(mainPath+'/books/'  + imageUrl)})`);
       } else {
         console.warn("Image not found. Showing default image.");
-        setBackgroundStyle(`url(${convertFileSrc(mainPath + '/books/default.png')})`);
+        setBackgroundStyle(`url(/books/default.png)`);
       }
     } catch (error) {
       console.error("Error verifying the existence of the image:", error);

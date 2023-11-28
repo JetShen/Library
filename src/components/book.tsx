@@ -15,7 +15,7 @@ function Book({ title, category, imageUrl }: { title: string; category: string; 
         setBackgroundStyle(`url(${convertFileSrc(mainPath+'/books/' + imageUrl)})`);
       } else {
         console.warn("Image not found. Showing default image.");
-        setBackgroundStyle(`url(${convertFileSrc(mainPath + 'default.png')})`);
+        setBackgroundStyle(`url(/books/default.png)`);
       }
     } catch (error) {
       console.error("Error verifying the existence of the image:", error);
