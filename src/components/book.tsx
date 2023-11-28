@@ -4,7 +4,13 @@ import '../style/book.css';
 import { currenPath } from '../script/gobal';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 
-function Book({ title, category, imageUrl }: { title: string; category: string; imageUrl: string }) {
+type BookProps = {
+  title: string;
+  category: string;
+  imageUrl: string;
+};
+
+function Book({ title, category, imageUrl }: BookProps) {
   const [backgroundStyle, setBackgroundStyle] = useState<string>('');
 
   const handleExist = async () => {
@@ -12,10 +18,10 @@ function Book({ title, category, imageUrl }: { title: string; category: string; 
       const mainPath = await currenPath;
       const res = await tauri.invoke('verifypath', { path: imageUrl });
       if (res === true) {
-        setBackgroundStyle(`url(${convertFileSrc(mainPath+'/books/' + imageUrl)})`);
+        setBackgroundStyle(() => `url(${convertFileSrc(mainPath+'/books/' + imageUrl)})`);
       } else {
         console.warn("Image not found. Showing default image.");
-        setBackgroundStyle(`url(/books/default.png)`);
+        setBackgroundStyle(() => `url(/books/default.png)`);
       }
     } catch (error) {
       console.error("Error verifying the existence of the image:", error);
@@ -24,7 +30,7 @@ function Book({ title, category, imageUrl }: { title: string; category: string; 
 
   useEffect(() => {
     handleExist();
-  }, []);
+  }, [imageUrl]);
 
   return (
     <div className="book" style={{ backgroundImage: backgroundStyle }}>

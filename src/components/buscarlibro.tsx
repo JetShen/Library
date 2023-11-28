@@ -3,18 +3,19 @@ import Box from "./box";
 import Book from "./book";
 import Modal from './modal'; 
 import { tauri } from '@tauri-apps/api';
-import "../style/buscar.css"
+import "../style/buscar.css";
 
-type Book = {
-    titulo: string;
-    categoria: string;
-    urlportada: string;
+type BookType = {
+  titulo: string;
+  categoria: string;
+  urlportada: string;
 };
 
 function Buscarlibro() {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [Listbooks, setBooks] = useState<Book[]>([]);
+  const [Listbooks, setBooks] = useState<BookType[]>([]);
   const [isDatabaseReady, setDatabaseReady] = useState(false);
+  const [query, setQuery] = useState('');
 
   const openModal = () => {
     setModalOpen(true);
@@ -26,7 +27,7 @@ function Buscarlibro() {
 
   async function getBooks() {
     try {
-      const res = await tauri.invoke<Book[]>('getallbooks');
+      const res = await tauri.invoke<BookType[]>('getallbooks');
       console.log("Res", res);
       setBooks(res);
     } catch (error) {
@@ -48,39 +49,62 @@ function Buscarlibro() {
     }
   }, [isDatabaseReady]);
 
-  async function searchBook(query: string) {
-    const queryBook = await tauri.invoke<Book[]>('getbook', { titulo: query });
-    console.log("QueryBook", queryBook);
-    setBooks(queryBook);
-  }
+  // Uso de useEffect para manejar la búsqueda cuando cambia el query
+  useEffect(() => {
+    if (query !== '') {
+      const fetchData = async () => {
+        try {
+          const queryBook = await tauri.invoke<BookType[]>('getbook', { titulo: query });
+          setBooks(queryBook);
+        } catch (error) {
+          console.error('Error searching book:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [query]);
 
   function captureEnter(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       const query = (document.getElementById("query") as HTMLInputElement).value;
-      searchBook(query);
+      setQuery(query);
     }
   }
 
-  return(
+  useEffect(() => {
+    // Debug de Listbooks
+    console.log("Listbooks", Listbooks);
+  }, [Listbooks]);
+
+  return (
     <Box>
-        <div className="book-box">
-            <ul className="book-list">
-                {Listbooks.map((book, index) => (
-                    <Book
-                    key={index}
-                    title={book.titulo}
-                    category={book.categoria}
-                    imageUrl={book.urlportada}
-                    />
-                ))}
-            </ul>
+      <div className="book-box">
+        <ul className="book-list">
+          {Listbooks.map((book) => (
+            <Book 
+              key={book.urlportada}
+              title={book.titulo}
+              category={book.categoria}
+              imageUrl={book.urlportada}
+            />
+          ))}
+        </ul>
+      </div>
+      <div className="search-box">
+        <div className="boxQuery">
+          <input
+            type="text"
+            name="query"
+            id="query"
+            className="Query"
+            placeholder="Escriba el nombre del Libro"
+            onKeyDown={captureEnter}
+          />
+          <button className="addBook" onClick={openModal}>
+            Añadir Libro
+          </button>
         </div>
-        <div className="search-box">
-            <div className="boxQuery">
-                <input type="text" name="query" id="query" className="Query" placeholder="Escriba el nombre del Libro" onKeyDown={captureEnter}  />
-                <button className="addBook" onClick={openModal}>Añadir Libro</button>
-            </div>
-            <div className="categoryBox">
+        <div className="categoryBox">
                 <ul className="categoryList">
                     <button className="categoryItem" value="Ficcion">Ficción</button>
                     <button className="categoryItem" value="NoFiccion">No ficción</button>
@@ -106,10 +130,10 @@ function Buscarlibro() {
                     <button className="categoryItem" value="Otros">Otros</button>
                 </ul>
             </div>
-        </div>
-        <Modal isOpen={isModalOpen} onClose={closeModal} />
+      </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal} />
     </Box>
-);
+  );
 }
 
 export default Buscarlibro;
