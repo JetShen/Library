@@ -47,6 +47,20 @@ function Buscarlibro() {
       getBooks();
     }
   }, [isDatabaseReady]);
+
+  async function searchBook(query: string) {
+    const queryBook = await tauri.invoke<Book[]>('getbook', { titulo: query });
+    console.log("QueryBook", queryBook);
+    setBooks(queryBook);
+  }
+
+  function captureEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      const query = (document.getElementById("query") as HTMLInputElement).value;
+      searchBook(query);
+    }
+  }
+
   return(
     <Box>
         <div className="book-box">
@@ -63,7 +77,7 @@ function Buscarlibro() {
         </div>
         <div className="search-box">
             <div className="boxQuery">
-                <input type="text" name="query" id="query" className="Query" placeholder="Escriba el nombre del Libro"/>
+                <input type="text" name="query" id="query" className="Query" placeholder="Escriba el nombre del Libro" onKeyDown={captureEnter}  />
                 <button className="addBook" onClick={openModal}>Añadir Libro</button>
             </div>
             <div className="categoryBox">

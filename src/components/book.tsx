@@ -10,7 +10,6 @@ function Book({ title, category, imageUrl }: { title: string; category: string; 
   const handleExist = async () => {
     try {
       const mainPath = await currenPath;
-      console.log("ruta:",mainPath+'/books/');
       const res = await tauri.invoke('verifypath', { path: imageUrl });
       if (res === true) {
         setBackgroundStyle(`url(${convertFileSrc(mainPath+'/books/' + imageUrl)})`);

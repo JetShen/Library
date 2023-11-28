@@ -71,3 +71,27 @@ pub fn getallbooks() -> Vec<Book> {
     }
     books
 }
+
+
+#[tauri::command]
+pub fn getbook(titulo: String) -> Vec<Book> {
+    let conn = conn();
+    let mut stmt = conn.prepare("SELECT * FROM Libros WHERE Titulo LIKE '%' || ?1 || '%'").unwrap();
+    let result = stmt.query_map([titulo], |row| {
+        Ok(Book {
+            isbn: row.get(0)?,
+            urlportada: row.get(1)?,
+            titulo: row.get(2)?,
+            autor: row.get(3)?,
+            categoria: row.get(4)?,
+            numerocopias: row.get(5)?,
+            ubicacion: row.get(6)?,
+        })
+    })
+    .unwrap();
+    let mut books: Vec<Book> = Vec::new();
+    for book in result {
+        books.push(book.unwrap());
+    }
+    books
+}
