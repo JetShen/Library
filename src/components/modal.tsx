@@ -52,9 +52,13 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
             ubicacion,
         };
         console.log(libro);
-        await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion}).then((res) => {
-            console.log(res);
-        });
+        try{
+            await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion}).then((res) => {
+              console.log(res);
+          });
+        }catch(error){
+          console.error("Error al agregar libro:", error);
+        }
     }
 
 
