@@ -1,15 +1,6 @@
 use super::create::conn;
 use serde::{Serialize, ser::SerializeStruct};
-
-// "CREATE TABLE IF NOT EXISTS Libros (
-//     ISBN TEXT PRIMARY KEY,
-//     url_Portada TEXT NOT NULL,
-//     Titulo TEXT NOT NULL,
-//     Autor TEXT NOT NULL,
-//     Categoria TEXT NOT NULL,
-//     NumeroCopias INTEGER NOT NULL,
-//     Ubicacion TEXT NOT NULL
-// )",
+use rusqlite::{params, Result};
 
 pub struct Book {
     isbn: String,
@@ -33,6 +24,34 @@ impl Serialize for Book {
         state.serialize_field("categoria", &self.categoria)?;
         state.serialize_field("numerocopias", &self.numerocopias)?;
         state.serialize_field("ubicacion", &self.ubicacion)?;
+        state.end()
+    }
+}
+
+pub struct Prestamo {
+    idprestamo: i32,
+    usuario_rut: String,
+    nombrelibro: String,
+    isbn: String,
+    fechaprestamo: String,
+    terminoprestamo: String,
+    rutbibliotecario: String,
+    urlportada: String,
+}
+impl Serialize for Prestamo {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("Prestamo", 7)?;
+        state.serialize_field("idprestamo", &self.idprestamo)?;
+        state.serialize_field("usuario_rut", &self.usuario_rut)?;
+        state.serialize_field("nombrelibro", &self.nombrelibro)?;
+        state.serialize_field("isbn", &self.isbn)?;
+        state.serialize_field("fechaprestamo", &self.fechaprestamo)?;
+        state.serialize_field("terminoprestamo", &self.terminoprestamo)?;
+        state.serialize_field("rutbibliotecario", &self.rutbibliotecario)?;
+        state.serialize_field("urlportada", &self.urlportada)?;
         state.end()
     }
 }
@@ -94,4 +113,62 @@ pub fn getbook(titulo: String) -> Vec<Book> {
         books.push(book.unwrap());
     }
     books
+}
+
+#[tauri::command]
+pub fn getallloan() ->Vec<Prestamo> {
+    let conn = conn();
+    let mut stmt = conn.prepare(
+        "SELECT Prestamo.idPrestamo, Prestamo.Usuario_Rut, Prestamo.NombreLibro, Prestamo.ISBN, Prestamo.FechaPrestamo, Prestamo.TerminoPrestamo, Prestamo.RutBibliotecario, Libros.url_Portada
+         FROM Prestamo
+         JOIN Libros ON Prestamo.ISBN = Libros.ISBN",
+    ).unwrap();
+    let result = stmt.query_map([], |row| {
+        Ok(Prestamo {
+            idprestamo: row.get(0)?,
+            usuario_rut: row.get(1)?,
+            nombrelibro: row.get(2)?,
+            isbn: row.get(3)?,
+            fechaprestamo: row.get(4)?,
+            terminoprestamo: row.get(5)?,
+            rutbibliotecario: row.get(6)?,
+            urlportada: row.get(7)?,
+        })
+    })
+    .unwrap();
+    let mut prestamos: Vec<Prestamo> = Vec::new();
+    for prestamo in result {
+        prestamos.push(prestamo.unwrap());
+    }
+    prestamos
+}
+
+#[tauri::command]
+pub fn getloan(rut: String) -> Vec<Prestamo> {
+    let conn = conn();
+    let mut stmt = conn.prepare(
+        "SELECT Prestamo.idPrestamo, Prestamo.Usuario_Rut, Prestamo.NombreLibro, Prestamo.ISBN, Prestamo.FechaPrestamo, Prestamo.TerminoPrestamo, Prestamo.RutBibliotecario, Libros.url_Portada
+         FROM Prestamo
+         JOIN Libros ON Prestamo.ISBN = Libros.ISBN
+         WHERE Prestamo.Usuario_Rut = ?1",
+    ).unwrap();
+
+    let result = stmt.query_map(params![rut], |row| {
+        Ok(Prestamo {
+            idprestamo: row.get(0)?,
+            usuario_rut: row.get(1)?,
+            nombrelibro: row.get(2)?,
+            isbn: row.get(3)?,
+            fechaprestamo: row.get(4)?,
+            terminoprestamo: row.get(5)?,
+            rutbibliotecario: row.get(6)?,
+            urlportada: row.get(7)?,
+        })
+    })
+    .unwrap();
+    let mut prestamos: Vec<Prestamo> = Vec::new();
+    for prestamo in result {
+        prestamos.push(prestamo.unwrap());
+    }
+    prestamos
 }

@@ -25,7 +25,7 @@ function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: 
 
   useEffect(() => {
     handleExist();
-  }, []);
+  }, [imageUrl]);
 
   return (
     <div className="item" style={{ backgroundImage: backgroundStyle }}>

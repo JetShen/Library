@@ -8,16 +8,18 @@
 }
 
 .querybox{
-    top: 0;
+    position: fixed;
+    top: 12em;
     width: 40%;
-    min-height: 10%;
+    min-height: 0%;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
     align-items: center;
+    gap: 0.5em;
 }
 
 .queryRut{
+    padding: 0.5em;
     width: 85%;
     height: 100%;    
     border: solid 1px rgba(0,0,0,0.63);
@@ -39,7 +41,8 @@
 }
 
 .btnBuscar{
-    width: 10%;
+    padding: 1em;
+    width: 20%;
     height: 70%;
     background-color: rgb(87, 87, 255);
     box-shadow: 0px 10px 20px -4px rgba(0,0,0,0.63);
