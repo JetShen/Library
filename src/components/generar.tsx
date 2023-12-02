@@ -26,13 +26,29 @@ function Generar() {
     }
   }
 
+  const validarFechas = (dateA: Date | null, dateB: Date | null) => {
+    if (dateA && dateB && dateA > dateB) {
+      return false;
+    }
+    return true;
+  };
+
   async function handleLoad(event: any) {
     event.preventDefault();
     const data = new FormData(event.target);
     const rut = data.get('rut') as string;
 
     const userExists = await getUser(rut);
-    console.log("Bool", userExists);
+    console.log("Bool User", userExists);
+
+    const boolDate = validarFechas(new Date(data.get('fechaprestamo') as string), new Date(data.get('terminoprestamo') as string));
+    console.log("Bool Date", boolDate);
+    if (!boolDate) {
+      alert("La fecha de termino de préstamo no puede ser menor a la fecha de inicio de préstamo.");
+      return;
+    }
+
+    console.log("continua")
 
     if (!userExists) {
       openModalU();
