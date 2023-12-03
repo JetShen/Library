@@ -18,10 +18,8 @@ function Generar() {
   async function getUser(rut: string): Promise<boolean> {
     try {
       const response = await tauri.invoke('getuser', { rut: rut });
-      console.log("Respuesta: ", response);
       return !!response;
     } catch (error) {
-      console.error("Error al obtener usuario:", error);
       return false;
     }
   }
@@ -39,16 +37,13 @@ function Generar() {
     const rut = data.get('rut') as string;
 
     const userExists = await getUser(rut);
-    console.log("Bool User", userExists);
 
     const boolDate = validarFechas(new Date(data.get('fechaprestamo') as string), new Date(data.get('terminoprestamo') as string));
-    console.log("Bool Date", boolDate);
     if (!boolDate) {
       alert("La fecha de termino de préstamo no puede ser menor a la fecha de inicio de préstamo.");
       return;
     }
 
-    console.log("continua")
 
     if (!userExists) {
       openModalU();
@@ -64,13 +59,11 @@ function Generar() {
       rutbibliotecario: data.get('rutbibliotecario') as string,
     };
 
-    console.log(prestamo);
     try {
         await tauri.invoke('addloan', { rutusuario: prestamo.rut, nombrelibro: prestamo.nombrelibro, isbn: prestamo.isbn, fechaprestamo: prestamo.fechaprestamo, terminoprestamo: prestamo.terminoprestamo, rutbibliotecario: prestamo.rutbibliotecario });
-
-        console.log("Préstamo agregado exitosamente.");
+        alert("Préstamo agregado correctamente.");
     } catch (error) {
-      console.error("Error al agregar préstamo:", error);
+        alert("Error al agregar préstamo.");
     }
   }
 

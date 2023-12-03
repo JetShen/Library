@@ -28,9 +28,9 @@ function Buscarlibro() {
   async function getBooks() {
     try {
       const res = await tauri.invoke<BookType[]>('getallbooks');
-      console.log("Res", res);
       setBooks(res);
     } catch (error) {
+      alert("Error al cargar libros");
       console.error('Error querying database:', error);
     }
   }
@@ -49,7 +49,6 @@ function Buscarlibro() {
     }
   }, [isDatabaseReady]);
 
-  // Uso de useEffect para manejar la búsqueda cuando cambia el query
   useEffect(() => {
     if (query !== '') {
       const fetchData = async () => {
@@ -71,10 +70,6 @@ function Buscarlibro() {
     }
   }
 
-  useEffect(() => {
-    // Debug de Listbooks
-    console.log("Listbooks", Listbooks);
-  }, [Listbooks]);
 
   return (
     <Box>

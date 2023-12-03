@@ -13,18 +13,9 @@ function ModalUser({ isOpenU, onCloseU }:{isOpenU:boolean, onCloseU:()=>void}){
     const telefono = data.get('telefono');
     const direccion = data.get('direccion');
 
-    const usuario = {
-        rut,
-        nombre,
-        apellido,
-        email,
-        telefono,
-        direccion,
-    };
-    console.log(usuario);
-    await tauri.invoke('adduser', {rut: rut, nombre: nombre, apellido: apellido, correo: email, telefono: telefono, direccion: direccion}).then((res) => {
-        console.log(res);
-    });
+    await tauri.invoke('adduser', {rut: rut, nombre: nombre, apellido: apellido, correo: email, telefono: telefono, direccion: direccion});
+    alert("Usuario agregado correctamente");
+    onCloseU();
   }
 
   return(

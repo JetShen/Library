@@ -3,6 +3,7 @@
     border-radius: 0.5em;
     width: 12em;
     height: 16em;
+    flex: 0 0 23%;
     break-inside: avoid;
     margin-bottom: 10px;
     background-position: center;
