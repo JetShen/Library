@@ -5,7 +5,9 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 import '../style/prestamo.css';
 
 
-function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: string, fechaTermino: string, imageUrl: string } ) {
+function Prestamo({idPrestamo , rut, titulo, fechaTermino, imageUrl, setRmvID } 
+                      : 
+                  {idPrestamo:number ,rut: string, titulo: string, fechaTermino: string, imageUrl: string, setRmvID: any } ) {
   const [backgroundStyle, setBackgroundStyle] = useState<string>('');
 
   const handleExist = async () => {
@@ -27,6 +29,19 @@ function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: 
     handleExist();
   }, [imageUrl]);
 
+  const eliminarPrestamo = async () => {
+    try {
+      console.log("idPrestamo", idPrestamo);
+      const res = await tauri.invoke('removeloan', { idprestamo: idPrestamo });
+      alert("Préstamo eliminado correctamente.");
+      setRmvID(idPrestamo);
+      console.log("Res Delete Loan", res);
+    } catch (error) {
+      alert("Error al eliminar préstamo.");
+      console.error("Error al eliminar préstamo:", error);
+    }
+  };
+
   return (
     <div className="item" style={{ backgroundImage: backgroundStyle }}>
       <div className="info-prestamo">
@@ -35,7 +50,7 @@ function Prestamo({rut, titulo, fechaTermino, imageUrl} : {rut: string, titulo: 
           <p className='rut'>Rut:{rut}</p>
           <p className='fecha'>Fecha:{fechaTermino}</p>
         </span>
-        <button className='btnDevolver'>Devolver</button>
+        <button className='btnDevolver' onClick={eliminarPrestamo} >Devolver</button>
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ type Prestamos = {
 
 function Buscar(){
     const [prestamos, setPrestamos] = useState<Prestamos[]>([]);
+    const [rmvListener, setRmvID] = useState<number>(0);
 
     async function getPrestamos(){
         try{
@@ -48,6 +49,16 @@ function Buscar(){
         getPrestamos();
     }, []);
 
+    useEffect(() => {
+        prestamos.filter((prestamo) => {
+            if(prestamo.idprestamo === rmvListener){
+                const index = prestamos.indexOf(prestamo);
+                prestamos.splice(index, 1);
+                setPrestamos(prestamos);
+            }
+        });
+    }, [rmvListener]);
+
     return(
         <Box>
             <div className="inner">
@@ -60,10 +71,12 @@ function Buscar(){
                         {prestamos.map((prestamo, index) => (
                             <Prestamo
                             key={index}
+                            idPrestamo={prestamo.idprestamo}
                             rut={prestamo.usuario_rut}
                             titulo={prestamo.nombrelibro}
                             fechaTermino={prestamo.terminoprestamo}
                             imageUrl={prestamo.urlportada}
+                            setRmvID = {setRmvID}
                             />
                         ))}         
                     </ul>
