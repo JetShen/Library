@@ -7,7 +7,7 @@ import "../style/buscar.css";
 
 type BookType = {
   titulo: string;
-  categoria: string;
+  categoria: Array<string>;
   urlportada: string;
 };
 
@@ -28,6 +28,7 @@ function Buscarlibro() {
   async function getBooks() {
     try {
       const res = await tauri.invoke<BookType[]>('getallbooks');
+      console.log(res);
       setBooks(res);
     } catch (error) {
       alert("Error al cargar libros");
@@ -54,6 +55,7 @@ function Buscarlibro() {
       const fetchData = async () => {
         try {
           const queryBook = await tauri.invoke<BookType[]>('getbook', { titulo: query });
+          console.log("Test \n",queryBook);
           setBooks(queryBook);
         } catch (error) {
           console.error('Error searching book:', error);

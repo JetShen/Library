@@ -33,7 +33,9 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
     }
     const titulo = data.get('Titulo');
     const autor = data.get('Autor');
-    const categoria = data.get('Categoria');
+    const ListCategoria = data.get('Categoria')?.toString().replace(' ','').split(',');
+    const categoria = ListCategoria?.map((item)=>item.trim());
+    
     const numero_copias = data.get('NumeroCopias');
     const parsed = parseInt(numero_copias as string);
     const portada = `${isbn}_portada.png`
@@ -59,7 +61,7 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
             <input type="file" name="url_Portada" id="" placeholder="URL Portada"/>
             <input type="text" name="Titulo" id="" placeholder="Titulo"/>
             <input type="text" name="Autor" id="" placeholder="Autor"/>
-            <input type="text" name="Categoria" id="" placeholder="Categoria"/>
+            <input type="text" name="Categoria" id="" placeholder="Categoria ej 'Accion,Misterio' "/>
             <input type="number" name="NumeroCopias" id="" placeholder="Numero de Copias"/>
             <input type="text" name="Ubicacion" id="" placeholder="Ubicacion"/>
             <button type="submit" className="Generar">Agregar</button>

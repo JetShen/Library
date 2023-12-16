@@ -6,7 +6,7 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 
 type BookProps = {
   title: string;
-  category: string;
+  category: Array<string>;
   imageUrl: string;
 };
 
@@ -36,7 +36,7 @@ function Book({ title, category, imageUrl }: BookProps) {
     <div className="book" style={{ backgroundImage: backgroundStyle }}>
       <div className="info">
         <p className='title'>{title}</p>
-        <p className='category'>{category}</p>
+        {/* <p className='category'>{category}</p> */}
       </div>
     </div>
   );

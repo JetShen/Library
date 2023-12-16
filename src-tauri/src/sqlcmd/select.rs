@@ -7,7 +7,7 @@ pub struct Book {
     urlportada: String,
     titulo: String,
     autor: String,
-    categoria: String,
+    categoria: Vec<String>,
     numerocopias: i32,
     ubicacion: String
 }
@@ -71,19 +71,26 @@ pub fn getuser(rut: String) -> bool {
 #[tauri::command]
 pub fn getallbooks() -> Vec<Book> {
     let conn = conn();
-    let mut stmt = conn.prepare("SELECT * FROM Libros").unwrap();
+    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+    AS Categorias 
+    FROM Libros 
+    JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN 
+    JOIN Categoria ON LibroCategoria.Categoria_ID = Categoria.ID 
+    GROUP BY Libros.ISBN").unwrap();
+
     let result = stmt.query_map([], |row| {
         Ok(Book {
             isbn: row.get(0)?,
             urlportada: row.get(1)?,
             titulo: row.get(2)?,
             autor: row.get(3)?,
-            categoria: row.get(4)?,
-            numerocopias: row.get(5)?,
-            ubicacion: row.get(6)?,
+            numerocopias: row.get(4)?,
+            ubicacion: row.get(5)?,
+            categoria: vec![row.get(6)?],
         })
     })
     .unwrap();
+
     let mut books: Vec<Book> = Vec::new();
     for book in result {
         books.push(book.unwrap());
@@ -95,19 +102,27 @@ pub fn getallbooks() -> Vec<Book> {
 #[tauri::command]
 pub fn getbook(titulo: String) -> Vec<Book> {
     let conn = conn();
-    let mut stmt = conn.prepare("SELECT * FROM Libros WHERE Titulo LIKE '%' || ?1 || '%'").unwrap();
+    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+    AS Categorias 
+    FROM Libros 
+    JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN 
+    JOIN Categoria ON LibroCategoria.Categoria_ID = Categoria.ID 
+    WHERE Libros.Titulo LIKE '%' || ?1 || '%' 
+    GROUP BY Libros.ISBN ").unwrap();
+
     let result = stmt.query_map([titulo], |row| {
         Ok(Book {
             isbn: row.get(0)?,
             urlportada: row.get(1)?,
             titulo: row.get(2)?,
             autor: row.get(3)?,
-            categoria: row.get(4)?,
-            numerocopias: row.get(5)?,
-            ubicacion: row.get(6)?,
+            numerocopias: row.get(4)?,
+            ubicacion: row.get(5)?,
+            categoria: vec![row.get(6)?],
         })
     })
     .unwrap();
+
     let mut books: Vec<Book> = Vec::new();
     for book in result {
         books.push(book.unwrap());
