@@ -6,11 +6,10 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 
 type BookProps = {
   title: string;
-  category: Array<string>;
   imageUrl: string;
 };
 
-function Book({ title, category, imageUrl }: BookProps) {
+function Book({ title , imageUrl }: BookProps) {
   const [backgroundStyle, setBackgroundStyle] = useState<string>('');
 
   const handleExist = async () => {
@@ -36,7 +35,6 @@ function Book({ title, category, imageUrl }: BookProps) {
     <div className="book" style={{ backgroundImage: backgroundStyle }}>
       <div className="info">
         <p className='title'>{title}</p>
-        {/* <p className='category'>{category}</p> */}
       </div>
     </div>
   );

@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react';
 import Box from "./box";
 import Book from "./book";
-import Modal from './modal'; 
+import Modal from './modal';
 import { tauri } from '@tauri-apps/api';
 import "../style/buscar.css";
 
 type BookType = {
   titulo: string;
-  categoria: Array<string>;
   urlportada: string;
 };
+
+const categoryList = ["Ficcion", "NoFiccion", "Terror", "Romance", "Aventura", "Fantasia", "CienciaFiccion", "Infantil", "Juvenil", "Misterio", "Poesia", "Biografia", "Autoayuda", "Cocina", "Historia", "Economia", "Politica", "Arte", "Religion", "Deportes", "Viajes", "Otros"];
 
 function Buscarlibro() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [Listbooks, setBooks] = useState<BookType[]>([]);
   const [isDatabaseReady, setDatabaseReady] = useState(false);
   const [query, setQuery] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const openModal = () => {
     setModalOpen(true);
@@ -39,7 +41,7 @@ function Buscarlibro() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDatabaseReady(true);
-    }, 125); 
+    }, 125);
 
     return () => clearTimeout(timer);
   }, []);
@@ -55,7 +57,7 @@ function Buscarlibro() {
       const fetchData = async () => {
         try {
           const queryBook = await tauri.invoke<BookType[]>('getbook', { titulo: query });
-          console.log("Test \n",queryBook);
+          console.log("Test \n", queryBook);
           setBooks(queryBook);
         } catch (error) {
           console.error('Error searching book:', error);
@@ -72,16 +74,40 @@ function Buscarlibro() {
     }
   }
 
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategories((prevCategories) => {
+      if (prevCategories.includes(category)) {
+        return prevCategories.filter((c) => c !== category);
+      } else {
+        return [...prevCategories, category];
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (selectedCategories.length >= 1) {
+      const fetchData = async () => {
+        try {
+          const res = await tauri.invoke<BookType[]>('getbookbycategory', { categorias: selectedCategories });
+          console.log("categorias query \n", res);
+          setBooks(res);
+        } catch (error) {
+          console.error('Error searching book:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [selectedCategories]);
+
 
   return (
     <Box>
       <div className="book-box">
         <ul className="book-list">
           {Listbooks.map((book) => (
-            <Book 
+            <Book
               key={book.urlportada}
               title={book.titulo}
-              category={book.categoria}
               imageUrl={book.urlportada}
             />
           ))}
@@ -102,31 +128,18 @@ function Buscarlibro() {
           </button>
         </div>
         <div className="categoryBox">
-                <ul className="categoryList">
-                    <button className="categoryItem" value="Ficcion">Ficción</button>
-                    <button className="categoryItem" value="NoFiccion">No ficción</button>
-                    <button className="categoryItem" value="Terror">Terror</button>
-                    <button className="categoryItem" value="Romance">Romance</button>
-                    <button className="categoryItem" value="Aventura">Aventura</button>
-                    <button className="categoryItem" value="Fantasia">Fantasía</button>
-                    <button className="categoryItem" value="CienciaFiccion">Ciencia ficción</button>
-                    <button className="categoryItem" value="Infantil">Infantil</button>
-                    <button className="categoryItem" value="Juvenil">Juvenil</button>
-                    <button className="categoryItem" value="Misterio">Misterio</button>
-                    <button className="categoryItem" value="Poesia">Poesía</button>
-                    <button className="categoryItem" value="Biografia">Biografía</button>
-                    <button className="categoryItem" value="Autoayuda">Autoayuda</button>
-                    <button className="categoryItem" value="Cocina">Cocina</button>
-                    <button className="categoryItem" value="Historia">Historia</button>
-                    <button className="categoryItem" value="Economia">Economía</button>
-                    <button className="categoryItem" value="Politica">Política</button>
-                    <button className="categoryItem" value="Arte">Arte</button>
-                    <button className="categoryItem" value="Religion">Religión</button>
-                    <button className="categoryItem" value="Deportes">Deportes</button>
-                    <button className="categoryItem" value="Viajes">Viajes</button>
-                    <button className="categoryItem" value="Otros">Otros</button>
-                </ul>
-            </div>
+          <ul className="categoryList">
+            {categoryList.map((category) => (
+              <button
+                key={category}
+                className={`categoryItem ${selectedCategories.includes(category) ? 'selected' : ''}`}
+                onClick={() => handleCategoryClick(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </ul>
+        </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal} />
     </Box>
