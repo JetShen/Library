@@ -47,12 +47,6 @@ function Buscarlibro() {
   }, []);
 
   useEffect(() => {
-    if (isDatabaseReady) {
-      getBooks();
-    }
-  }, [isDatabaseReady]);
-
-  useEffect(() => {
     if (query !== '') {
       const fetchData = async () => {
         try {
@@ -85,19 +79,25 @@ function Buscarlibro() {
   };
 
   useEffect(() => {
-    if (selectedCategories.length >= 1) {
+    if (isDatabaseReady) {
       const fetchData = async () => {
         try {
-          const res = await tauri.invoke<BookType[]>('getbookbycategory', { categorias: selectedCategories });
-          console.log("categorias query \n", res);
-          setBooks(res);
+          if(selectedCategories.length>=1) {
+              const res = await tauri.invoke<BookType[]>('getbookbycategory', { categorias: selectedCategories });
+              console.log("categorias query \n", res);
+              setBooks(res);
+            return;
+          }else{
+              getBooks(); 
+            return;
+          }
         } catch (error) {
           console.error('Error searching book:', error);
         }
       };
       fetchData();
     }
-  }, [selectedCategories]);
+  }, [selectedCategories, isDatabaseReady]);
 
 
   return (
