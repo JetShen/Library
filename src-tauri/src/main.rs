@@ -19,7 +19,7 @@ fn currentpath() -> String {
 }
 
 #[tauri::command]
-fn bookdir() -> Result<(), String>{
+fn bookdir() -> bool{
     let mut path = currentpath();
     let mut db_path = path.clone();
     db_path.push_str("/DataBase");
@@ -28,7 +28,8 @@ fn bookdir() -> Result<(), String>{
     path.push_str("/books");
     let _ = fs::create_dir_all(path);
     let _ = sqlcmd::create::create();
-    Ok(())
+
+    true
 }
 
 #[tauri::command]

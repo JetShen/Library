@@ -12,16 +12,16 @@ type BookType = {
 
 const categoryList = ["Ficcion", "NoFiccion", "Terror", "Romance", "Aventura", "Fantasia", "CienciaFiccion", "Infantil", "Juvenil", "Misterio", "Poesia", "Biografia", "Autoayuda", "Cocina", "Historia", "Economia", "Politica", "Arte", "Religion", "Deportes", "Viajes", "Otros"];
 
-function Buscarlibro() {
+function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [Listbooks, setBooks] = useState<BookType[]>([]);
-  const [isDatabaseReady, setDatabaseReady] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const openModal = () => {
     setModalOpen(true);
   };
+
 
   const closeModal = () => {
     setModalOpen(false);
@@ -38,13 +38,7 @@ function Buscarlibro() {
     }
   }
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDatabaseReady(true);
-    }, 125);
 
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (query !== '') {
@@ -79,7 +73,7 @@ function Buscarlibro() {
   };
 
   useEffect(() => {
-    if (isDatabaseReady) {
+    if (BoolDB) {
       const fetchData = async () => {
         try {
           if(selectedCategories.length>=1) {
@@ -97,7 +91,7 @@ function Buscarlibro() {
       };
       fetchData();
     }
-  }, [selectedCategories, isDatabaseReady]);
+  }, [selectedCategories, BoolDB]);
 
 
   return (
