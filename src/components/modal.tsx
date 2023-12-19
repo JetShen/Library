@@ -5,6 +5,7 @@ import { Dir } from '@tauri-apps/api/fs';
 import { currenPath } from '../script/gobal';
 
 
+
 function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
   if (!isOpen) return null;
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,9 +59,12 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
         </span>
         <form className='formadd' onSubmit={handleSubmit}>
             <input type="text" name="ISBN" id="" placeholder="ISBN"/>
-            <input type="file" name="url_Portada" id="" placeholder="URL Portada"/>
+            <label className='butonFile'>
+              <input type="file" name="url_Portada" id="" placeholder="URL Portada" />
+            </label>
             <input type="text" name="Titulo" id="" placeholder="Titulo"/>
             <input type="text" name="Autor" id="" placeholder="Autor"/>
+            <textarea name="sinopsis" id="sinopsis" cols={50} rows={7} maxLength={250} placeholder="Sinopsis: maximo 250 caracteres"></textarea>
             <input type="text" name="Categoria" id="" placeholder="Categoria ej 'Accion,Misterio' "/>
             <input type="number" name="NumeroCopias" id="" placeholder="Numero de Copias"/>
             <input type="text" name="Ubicacion" id="" placeholder="Ubicacion"/>

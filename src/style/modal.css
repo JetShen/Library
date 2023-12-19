@@ -35,7 +35,7 @@
     align-items: center;
     gap: 1em;
 }
-.formadd input{
+.formadd .butonFile,input,textarea{
     width: 100%;
     padding: 0.5em;
     border: 1px solid #ccc;
@@ -43,7 +43,26 @@
     text-align: center;
 }
 
-.formadd input:focus{
+#sinopsis{
+    resize: none;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.butonFile{
+    color: white;
+    cursor: pointer;
+}
+.butonFile::before{
+    content: "Click para añadir portada";
+    padding: 0.5em;
+    border-radius: 0.5em;
+    color: rgb(99, 99, 99);
+}
+
+.formadd input:focus,textarea:focus{
     outline: none;
     border: 1px solid rgb(87, 87, 255);
     box-shadow: 0px 10px 20px -4px rgb(87, 87, 255);
