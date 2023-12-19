@@ -59,12 +59,11 @@
 .content{
     display: flex;
     flex-direction: column;
-    /* gap: 1em; */
     width: 50%;
     padding: 1.5em;
     height: 100%;
     justify-content: start;
-    align-items: center;
+    align-items: start;
 }
 
 .span-header{
@@ -73,7 +72,7 @@
     font-size: 1.5em;
     font-weight: bold;
     margin-bottom: 0.5em;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
 }
 

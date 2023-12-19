@@ -55,8 +55,8 @@ function BookModal( { Book, isOpen, onClose }:{Book:ModalBook,isOpen:boolean, on
                                 <h6>Cantidad: {Book.numerocopias}</h6>
                             </span>
                             <span className="minitext">
-                                <p>Autor: {Book.autor}</p>
-                                <p>Ubicación: {Book.ubicacion}</p>
+                                <p><strong>Autor:</strong> {Book.autor}</p>
+                                <p><strong>Ubicación:</strong> {Book.ubicacion}</p>
                             </span>
                             <div className='Listacategorias' >
                                 <h4>Categorías:</h4>

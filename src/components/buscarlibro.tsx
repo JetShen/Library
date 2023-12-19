@@ -56,6 +56,7 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   };
   const closeBook = () => {
     setModalBook(false);
+    setBook(dummyBook);
   };
 
   async function getBooks() {
