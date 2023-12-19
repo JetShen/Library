@@ -34,6 +34,7 @@ pub fn create() -> Result<(), rusqlite::Error> {
             url_Portada TEXT NOT NULL,
             Titulo TEXT NOT NULL,
             Autor TEXT NOT NULL,
+            Sinopsis TEXT NOT NULL,
             NumeroCopias INTEGER NOT NULL,
             Ubicacion TEXT NOT NULL
         )",

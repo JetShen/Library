@@ -19,17 +19,19 @@ type ModalBook = {
   urlportada: string;
   categoria: string;
   autor: string;
+  sinopsis: string;
   numerocopias: number;
   ubicacion: string;
 }
 
-const categoryList = ["Ficcion", "NoFiccion", "Terror", "Romance", "Aventura", "Fantasia", "CienciaFiccion", "Infantil", "Juvenil", "Misterio", "Poesia", "Biografia", "Autoayuda", "Cocina", "Historia", "Economia", "Politica", "Arte", "Religion", "Deportes", "Viajes", "Otros"];
+
 
 const dummyBook: ModalBook = {
   titulo: '',
   urlportada: '',
   categoria: '',
   autor: '',
+  sinopsis: '',
   numerocopias: 0,
   ubicacion: '',
 };
@@ -41,6 +43,7 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   const [query, setQuery] = useState('');
   const [book, setBook] = useState<ModalBook>(dummyBook);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoryList, setCategoryList] = useState<string[]>([]);
 
   const openModal = () => {
     setModalOpen(true);
@@ -48,6 +51,20 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   const closeModal = () => {
     setModalOpen(false);
   };
+
+  useEffect(() => {
+    if (BoolDB) {
+      const fetchData = async () => {
+        try {
+          const res = await tauri.invoke<string[]>('getallcategory');
+          setCategoryList(res);
+        } catch (error) {
+          console.error('Error querying database:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [BoolDB]);
 
 
   const openBook = (book: ModalBook) =>{
@@ -153,7 +170,8 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
           </button>
         </div>
         <div className="categoryBox">
-          <ul className="categoryList">
+          {categoryList.length > 0?
+            <ul className="categoryList">
             {categoryList.map((category) => (
               <button
                 key={category}
@@ -163,7 +181,9 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
                 {category}
               </button>
             ))}
-          </ul>
+          </ul> : 
+          <h1 className='aviso'>No hay Libros/Categorias disponibles</h1> 
+          }
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal} />

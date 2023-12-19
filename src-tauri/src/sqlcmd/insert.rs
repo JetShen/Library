@@ -2,12 +2,12 @@ use super::create::conn;
 use rusqlite::{Result, params};
 
 #[tauri::command]
-pub fn addbook(isbn: String, urlportada: String, titulo: String, autor: String, categoria: Vec<String>, numerocopias: i32, ubicacion: String)  -> Result<(), String>{
+pub fn addbook(isbn: String, urlportada: String, titulo: String, sinopsis:String, autor: String, categoria: Vec<String>, numerocopias: i32, ubicacion: String)  -> Result<(), String>{
     let conn = conn();
     conn.execute(
-        "INSERT INTO Libros (ISBN, url_Portada, Titulo, Autor, NumeroCopias, Ubicacion)
-        VALUES (?, ?, ?, ?, ?, ?)",
-        params![isbn, urlportada, titulo, autor, numerocopias, ubicacion],
+        "INSERT INTO Libros (ISBN, url_Portada, Titulo, Autor, Sinopsis, NumeroCopias, Ubicacion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)",
+        params![isbn, urlportada, titulo, autor, sinopsis, numerocopias, ubicacion],
     ).unwrap();
 
     for categoria in categoria.iter() {

@@ -34,6 +34,7 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
     }
     const titulo = data.get('Titulo');
     const autor = data.get('Autor');
+    const sinopsis = data.get('sinopsis');
     const ListCategoria = data.get('Categoria')?.toString().replace(' ','').split(',');
     const categoria = ListCategoria?.map((item)=>item.trim());
     
@@ -42,7 +43,7 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
     const portada = `${isbn}_portada.png`
     const ubicacion = data.get('Ubicacion');
     try{
-      await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion});
+      await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, sinopsis: sinopsis, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion});
       alert("Libro agregado correctamente");
       onClose();
     }catch(error){

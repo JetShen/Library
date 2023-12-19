@@ -9,6 +9,7 @@ type ModalBook = {
     urlportada: string;
     categoria: string;
     autor: string;
+    sinopsis: string;
     numerocopias: number;
     ubicacion: string;
 }
@@ -66,7 +67,7 @@ function BookModal( { Book, isOpen, onClose }:{Book:ModalBook,isOpen:boolean, on
                             </div>
                             <div className="sinopsis">
                                 <h3>Sinopsis</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui asperiores veniam consectetur iure at debitis quibusdam dolores minima, rem ad tempora, dolore nostrum totam ipsam voluptatum nihil, voluptatibus soluta officiis!</p>
+                                <p>{Book.sinopsis}</p>
                             </div>
                         </div>
                     </div>

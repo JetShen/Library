@@ -7,6 +7,7 @@ pub struct Book {
     urlportada: String,
     titulo: String,
     autor: String,
+    sinopsis: String,
     categoria: Vec<String>,
     numerocopias: i32,
     ubicacion: String
@@ -21,6 +22,7 @@ impl Serialize for Book {
         state.serialize_field("urlportada", &self.urlportada)?;
         state.serialize_field("titulo", &self.titulo)?;
         state.serialize_field("autor", &self.autor)?;
+        state.serialize_field("sinopsis", &self.sinopsis)?;
         state.serialize_field("categoria", &self.categoria)?;
         state.serialize_field("numerocopias", &self.numerocopias)?;
         state.serialize_field("ubicacion", &self.ubicacion)?;
@@ -33,6 +35,7 @@ pub struct BookCategory {
     urlportada: String,
     titulo: String,
     autor: String,
+    sinopsis: String,
     categoria: Vec<String>,
     numerocopias: i32,
     ubicacion: String,
@@ -43,11 +46,12 @@ impl Serialize for BookCategory {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("BookCategory", 8)?;
+        let mut state = serializer.serialize_struct("BookCategory", 9)?;
         state.serialize_field("isbn", &self.isbn)?;
         state.serialize_field("urlportada", &self.urlportada)?;
         state.serialize_field("titulo", &self.titulo)?;
         state.serialize_field("autor", &self.autor)?;
+        state.serialize_field("sinopsis", &self.sinopsis)?;
         state.serialize_field("categoria", &self.categoria)?;
         state.serialize_field("numerocopias", &self.numerocopias)?;
         state.serialize_field("ubicacion", &self.ubicacion)?;
@@ -99,7 +103,7 @@ pub fn getuser(rut: String) -> bool {
 #[tauri::command]
 pub fn getallbooks() -> Vec<Book> {
     let conn = conn();
-    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.Sinopsis, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
     AS Categorias 
     FROM Libros 
     JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN 
@@ -112,9 +116,10 @@ pub fn getallbooks() -> Vec<Book> {
             urlportada: row.get(1)?,
             titulo: row.get(2)?,
             autor: row.get(3)?,
-            numerocopias: row.get(4)?,
-            ubicacion: row.get(5)?,
-            categoria: vec![row.get(6)?],
+            sinopsis: row.get(4)?,
+            numerocopias: row.get(5)?,
+            ubicacion: row.get(6)?,
+            categoria: vec![row.get(7)?],
         })
     })
     .unwrap();
@@ -126,11 +131,26 @@ pub fn getallbooks() -> Vec<Book> {
     books
 }
 
+#[tauri::command]
+pub fn getallcategory() -> Vec<String> {
+    let conn = conn();
+    let mut stmt = conn.prepare("SELECT Nombre FROM Categoria").unwrap();
+    let result = stmt.query_map([], |row| {
+        Ok(row.get(0)?)
+    })
+    .unwrap();
+
+    let mut categorias: Vec<String> = Vec::new();
+    for categoria in result {
+        categorias.push(categoria.unwrap());
+    }
+    categorias
+}
 
 #[tauri::command]
 pub fn getbook(titulo: String) -> Vec<Book> {
     let conn = conn();
-    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.Sinopsis, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
     AS Categorias 
     FROM Libros 
     JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN 
@@ -144,9 +164,10 @@ pub fn getbook(titulo: String) -> Vec<Book> {
             urlportada: row.get(1)?,
             titulo: row.get(2)?,
             autor: row.get(3)?,
-            numerocopias: row.get(4)?,
-            ubicacion: row.get(5)?,
-            categoria: vec![row.get(6)?],
+            sinopsis: row.get(4)?,
+            numerocopias: row.get(5)?,
+            ubicacion: row.get(6)?,
+            categoria: vec![row.get(7)?],
         })
     })
     .unwrap();
@@ -163,7 +184,7 @@ pub fn getbookbycategory(categorias: Vec<String>) -> Vec<Book> {
     let conn = conn();
 
     let query = format!(
-        "SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+        "SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.Sinopsis, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
         AS Categorias
         FROM Libros
         JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN
@@ -190,9 +211,10 @@ pub fn getbookbycategory(categorias: Vec<String>) -> Vec<Book> {
             urlportada: row.get(1)?,
             titulo: row.get(2)?,
             autor: row.get(3)?,
-            numerocopias: row.get(4)?,
-            ubicacion: row.get(5)?,
-            categoria: vec![row.get(6)?],
+            sinopsis: row.get(4)?,
+            numerocopias: row.get(5)?,
+            ubicacion: row.get(6)?,
+            categoria: vec![row.get(7)?],
         })
     }).unwrap();
 

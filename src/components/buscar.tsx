@@ -23,7 +23,6 @@ function Buscar(){
     async function getPrestamos(){
         try{
             const resLoan = await tauri.invoke<Prestamos[]>('getallloan');
-            console.log("Res all Loan", resLoan);
             setPrestamos(resLoan);
         }catch(error){
             console.error("Error al obtener préstamos:", error);
@@ -38,7 +37,6 @@ function Buscar(){
 
         try{
             const resLoan = await tauri.invoke<Prestamos[]>('getloan', { rut: rut });
-            console.log("Res Loan", resLoan);
             setPrestamos(resLoan);
         }catch(error){
             console.error("Error al obtener préstamo:", error);

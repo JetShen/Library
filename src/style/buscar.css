@@ -73,18 +73,19 @@
 .categoryBox{
     width: 90%;
     height: 80%;
-    margin: 1em 0 0 1em;
+    margin: 1em 0 0 0.2em;
     overflow-y: auto;
 }
 
 .categoryList{
+    display: flex;
     text-align: center;
     width: 100%;
     list-style: none;
     padding: 0;
     margin: 0;
     column-count: 3;
-    column-gap: 0.5em;
+    column-gap: 0.32em;
 }
 
 .categoryItem{
