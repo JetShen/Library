@@ -53,7 +53,6 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   const openBook = (book: ModalBook) =>{
     setModalBook(true);
     setBook(book);
-    console.log("Libro\n",book);
   };
   const closeBook = () => {
     setModalBook(false);
@@ -62,7 +61,6 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   async function getBooks() {
     try {
       const res = await tauri.invoke<ModalBook[]>('getallbooks');
-      console.log(res);
       setBooks(res);
     } catch (error) {
       alert("Error al cargar libros");

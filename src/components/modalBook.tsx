@@ -18,7 +18,6 @@ function BookModal( { Book, isOpen, onClose }:{Book:ModalBook,isOpen:boolean, on
     const [backgroundStyle, setBackgroundStyle] = useState<string>('');
 
     const listCategoria = Book.categoria[0].split(',');
-    console.log(listCategoria);
     
 
     const handleExist = async () => {
@@ -64,6 +63,10 @@ function BookModal( { Book, isOpen, onClose }:{Book:ModalBook,isOpen:boolean, on
                                 {listCategoria.map((category, index) => (
                                     <p key={index}>{category}</p>
                                 ))}
+                            </div>
+                            <div className="sinopsis">
+                                <h3>Sinopsis</h3>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui asperiores veniam consectetur iure at debitis quibusdam dolores minima, rem ad tempora, dolore nostrum totam ipsam voluptatum nihil, voluptatibus soluta officiis!</p>
                             </div>
                         </div>
                     </div>

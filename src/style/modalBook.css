@@ -23,7 +23,7 @@
 
 .modal-content-book{
     position: relative;
-    width: 80%;
+    width: 60%;
     height: 80%;
     background-color: white;
     border-radius: 0.5em;
@@ -46,7 +46,7 @@
 }
 
 .imgdiv{
-    width: 30%;
+    width: 40%;
     height: 100%;
     border-radius: 0.5em;
     break-inside: avoid;
@@ -57,14 +57,19 @@
 }
 
 .content{
-    width: 55%;
+    display: flex;
+    flex-direction: column;
+    /* gap: 1em; */
+    width: 50%;
     padding: 1.5em;
     height: 100%;
+    justify-content: start;
+    align-items: center;
 }
 
 .span-header{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     font-size: 1.5em;
     font-weight: bold;
     margin-bottom: 0.5em;
@@ -79,4 +84,15 @@
     flex-wrap: wrap;
     gap: 0.5em;
     margin-bottom: 1em;
+}
+
+.sinopsis{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    font-size: large;
+    
 }
