@@ -7,11 +7,12 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 type BookProps = {
   title: string;
   imageUrl: string;
+  onClick?: () => void;
 };
 
 function Book({ title , imageUrl }: BookProps) {
   const [backgroundStyle, setBackgroundStyle] = useState<string>('');
-
+  
   const handleExist = async () => {
     try {
       const mainPath = await currenPath;

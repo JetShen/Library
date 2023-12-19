@@ -33,9 +33,10 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    gap: 10px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    transition: ease-in-out 0.4s;
 }
 
 .boxQuery{

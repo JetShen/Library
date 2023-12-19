@@ -2,34 +2,66 @@ import { useState, useEffect } from 'react';
 import Box from "./box";
 import Book from "./book";
 import Modal from './modal';
+import BookModal from './modalBook';
 import { tauri } from '@tauri-apps/api';
 import "../style/buscar.css";
 
-type BookType = {
+// type BookType = {
+//   titulo: string;
+//   urlportada: string;
+  
+// };
+
+
+
+type ModalBook = {
   titulo: string;
   urlportada: string;
-};
+  categoria: string;
+  autor: string;
+  numerocopias: number;
+  ubicacion: string;
+}
 
 const categoryList = ["Ficcion", "NoFiccion", "Terror", "Romance", "Aventura", "Fantasia", "CienciaFiccion", "Infantil", "Juvenil", "Misterio", "Poesia", "Biografia", "Autoayuda", "Cocina", "Historia", "Economia", "Politica", "Arte", "Religion", "Deportes", "Viajes", "Otros"];
 
+const dummyBook: ModalBook = {
+  titulo: '',
+  urlportada: '',
+  categoria: '',
+  autor: '',
+  numerocopias: 0,
+  ubicacion: '',
+};
+
 function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [Listbooks, setBooks] = useState<BookType[]>([]);
+  const [modalook, setModalBook] = useState(false);
+  const [Listbooks, setBooks] = useState<ModalBook[]>([]);
   const [query, setQuery] = useState('');
+  const [book, setBook] = useState<ModalBook>(dummyBook);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const openModal = () => {
     setModalOpen(true);
   };
-
-
   const closeModal = () => {
     setModalOpen(false);
   };
 
+
+  const openBook = (book: ModalBook) =>{
+    setModalBook(true);
+    setBook(book);
+    console.log("Libro\n",book);
+  };
+  const closeBook = () => {
+    setModalBook(false);
+  };
+
   async function getBooks() {
     try {
-      const res = await tauri.invoke<BookType[]>('getallbooks');
+      const res = await tauri.invoke<ModalBook[]>('getallbooks');
       console.log(res);
       setBooks(res);
     } catch (error) {
@@ -44,8 +76,7 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
     if (query !== '') {
       const fetchData = async () => {
         try {
-          const queryBook = await tauri.invoke<BookType[]>('getbook', { titulo: query });
-          console.log("Test \n", queryBook);
+          const queryBook = await tauri.invoke<ModalBook[]>('getbook', { titulo: query });
           setBooks(queryBook);
         } catch (error) {
           console.error('Error searching book:', error);
@@ -77,8 +108,7 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
       const fetchData = async () => {
         try {
           if(selectedCategories.length>=1) {
-              const res = await tauri.invoke<BookType[]>('getbookbycategory', { categorias: selectedCategories });
-              console.log("categorias query \n", res);
+              const res = await tauri.invoke<ModalBook[]>('getbookbycategory', { categorias: selectedCategories });
               setBooks(res);
             return;
           }else{
@@ -93,17 +123,19 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
     }
   }, [selectedCategories, BoolDB]);
 
-
   return (
     <Box>
       <div className="book-box">
         <ul className="book-list">
-          {Listbooks.map((book) => (
-            <Book
-              key={book.urlportada}
+          {Listbooks.map((book, index) => (
+            <span  key={index} onClick={() =>openBook(book)}>
+              <Book
+              key={index}
               title={book.titulo}
               imageUrl={book.urlportada}
-            />
+              />
+            </span>
+            
           ))}
         </ul>
       </div>
@@ -136,6 +168,11 @@ function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal} />
+      <BookModal
+        isOpen={modalook}
+        onClose={closeBook}
+        Book={book}
+      />
     </Box>
   );
 }
