@@ -5,6 +5,7 @@ import { Dir } from '@tauri-apps/api/fs';
 import { currenPath } from '../script/gobal';
 
 
+
 function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
   if (!isOpen) return null;
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,13 +34,16 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
     }
     const titulo = data.get('Titulo');
     const autor = data.get('Autor');
-    const categoria = data.get('Categoria');
+    const sinopsis = data.get('sinopsis');
+    const ListCategoria = data.get('Categoria')?.toString().replace(' ','').split(',');
+    const categoria = ListCategoria?.map((item)=>item.trim());
+    
     const numero_copias = data.get('NumeroCopias');
     const parsed = parseInt(numero_copias as string);
     const portada = `${isbn}_portada.png`
     const ubicacion = data.get('Ubicacion');
     try{
-      await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion});
+      await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, sinopsis: sinopsis, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion});
       alert("Libro agregado correctamente");
       onClose();
     }catch(error){
@@ -56,10 +60,13 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
         </span>
         <form className='formadd' onSubmit={handleSubmit}>
             <input type="text" name="ISBN" id="" placeholder="ISBN"/>
-            <input type="file" name="url_Portada" id="" placeholder="URL Portada"/>
+            <label className='butonFile'>
+              <input type="file" name="url_Portada" id="" placeholder="URL Portada" />
+            </label>
             <input type="text" name="Titulo" id="" placeholder="Titulo"/>
             <input type="text" name="Autor" id="" placeholder="Autor"/>
-            <input type="text" name="Categoria" id="" placeholder="Categoria"/>
+            <textarea name="sinopsis" id="sinopsis" cols={50} rows={7} maxLength={250} placeholder="Sinopsis: maximo 250 caracteres"></textarea>
+            <input type="text" name="Categoria" id="" placeholder="Categoria ej 'Accion,Misterio' "/>
             <input type="number" name="NumeroCopias" id="" placeholder="Numero de Copias"/>
             <input type="text" name="Ubicacion" id="" placeholder="Ubicacion"/>
             <button type="submit" className="Generar">Agregar</button>

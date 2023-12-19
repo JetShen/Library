@@ -34,9 +34,28 @@ pub fn create() -> Result<(), rusqlite::Error> {
             url_Portada TEXT NOT NULL,
             Titulo TEXT NOT NULL,
             Autor TEXT NOT NULL,
-            Categoria TEXT NOT NULL,
+            Sinopsis TEXT NOT NULL,
             NumeroCopias INTEGER NOT NULL,
             Ubicacion TEXT NOT NULL
+        )",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS Categoria (
+            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Nombre TEXT NOT NULL
+        )",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS LibroCategoria (
+            Libro_ISBN TEXT,
+            Categoria_ID INTEGER,
+            PRIMARY KEY (Libro_ISBN, Categoria_ID),
+            FOREIGN KEY (Libro_ISBN) REFERENCES Libros (ISBN),
+            FOREIGN KEY (Categoria_ID) REFERENCES Categoria (ID)
         )",
         [],
     )?;

@@ -31,11 +31,9 @@ function Prestamo({idPrestamo , rut, titulo, fechaTermino, imageUrl, setRmvID }
 
   const eliminarPrestamo = async () => {
     try {
-      console.log("idPrestamo", idPrestamo);
       const res = await tauri.invoke('removeloan', { idprestamo: idPrestamo });
       alert("Préstamo eliminado correctamente.");
       setRmvID(idPrestamo);
-      console.log("Res Delete Loan", res);
     } catch (error) {
       alert("Error al eliminar préstamo.");
       console.error("Error al eliminar préstamo:", error);

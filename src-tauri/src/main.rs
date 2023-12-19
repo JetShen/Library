@@ -6,7 +6,7 @@ use std::fs;
 
 use crate::sqlcmd::{
     insert::{addbook, adduser, addloan}, 
-    select::{getuser, getallbooks, getbook, getloan, getallloan},
+    select::{getuser, getallbooks, getbook, getbookbycategory, getloan, getallloan, getallcategory},
     delete::removeloan
 };
 
@@ -19,7 +19,7 @@ fn currentpath() -> String {
 }
 
 #[tauri::command]
-fn bookdir() -> Result<(), String>{
+fn bookdir() -> bool{
     let mut path = currentpath();
     let mut db_path = path.clone();
     db_path.push_str("/DataBase");
@@ -28,7 +28,8 @@ fn bookdir() -> Result<(), String>{
     path.push_str("/books");
     let _ = fs::create_dir_all(path);
     let _ = sqlcmd::create::create();
-    Ok(())
+
+    true
 }
 
 #[tauri::command]
@@ -48,8 +49,8 @@ fn verifypath(path: String) -> bool {
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![currentpath, verifypath, bookdir, addbook, adduser,
-                                                 addloan, getuser, getallbooks, getbook, getloan, getallloan,
-                                                 removeloan])
+                                                addloan, getuser, getallbooks, getbook, getbookbycategory,
+                                                getloan, getallloan, removeloan, getallcategory])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

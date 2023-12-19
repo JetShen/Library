@@ -1,33 +1,84 @@
 import { useState, useEffect } from 'react';
 import Box from "./box";
 import Book from "./book";
-import Modal from './modal'; 
+import Modal from './modal';
+import BookModal from './modalBook';
 import { tauri } from '@tauri-apps/api';
 import "../style/buscar.css";
 
-type BookType = {
+// type BookType = {
+//   titulo: string;
+//   urlportada: string;
+  
+// };
+
+
+
+type ModalBook = {
   titulo: string;
-  categoria: string;
   urlportada: string;
+  categoria: string;
+  autor: string;
+  sinopsis: string;
+  numerocopias: number;
+  ubicacion: string;
+}
+
+
+
+const dummyBook: ModalBook = {
+  titulo: '',
+  urlportada: '',
+  categoria: '',
+  autor: '',
+  sinopsis: '',
+  numerocopias: 0,
+  ubicacion: '',
 };
 
-function Buscarlibro() {
+function Buscarlibro({ BoolDB }: { BoolDB: Boolean }) {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [Listbooks, setBooks] = useState<BookType[]>([]);
-  const [isDatabaseReady, setDatabaseReady] = useState(false);
+  const [modalook, setModalBook] = useState(false);
+  const [Listbooks, setBooks] = useState<ModalBook[]>([]);
   const [query, setQuery] = useState('');
+  const [book, setBook] = useState<ModalBook>(dummyBook);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoryList, setCategoryList] = useState<string[]>([]);
 
   const openModal = () => {
     setModalOpen(true);
   };
-
   const closeModal = () => {
     setModalOpen(false);
   };
 
+  useEffect(() => {
+    if (BoolDB) {
+      const fetchData = async () => {
+        try {
+          const res = await tauri.invoke<string[]>('getallcategory');
+          setCategoryList(res);
+        } catch (error) {
+          console.error('Error querying database:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [BoolDB]);
+
+
+  const openBook = (book: ModalBook) =>{
+    setModalBook(true);
+    setBook(book);
+  };
+  const closeBook = () => {
+    setModalBook(false);
+    setBook(dummyBook);
+  };
+
   async function getBooks() {
     try {
-      const res = await tauri.invoke<BookType[]>('getallbooks');
+      const res = await tauri.invoke<ModalBook[]>('getallbooks');
       setBooks(res);
     } catch (error) {
       alert("Error al cargar libros");
@@ -35,25 +86,13 @@ function Buscarlibro() {
     }
   }
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDatabaseReady(true);
-    }, 125); 
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (isDatabaseReady) {
-      getBooks();
-    }
-  }, [isDatabaseReady]);
 
   useEffect(() => {
     if (query !== '') {
       const fetchData = async () => {
         try {
-          const queryBook = await tauri.invoke<BookType[]>('getbook', { titulo: query });
+          const queryBook = await tauri.invoke<ModalBook[]>('getbook', { titulo: query });
           setBooks(queryBook);
         } catch (error) {
           console.error('Error searching book:', error);
@@ -70,18 +109,49 @@ function Buscarlibro() {
     }
   }
 
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategories((prevCategories) => {
+      if (prevCategories.includes(category)) {
+        return prevCategories.filter((c) => c !== category);
+      } else {
+        return [...prevCategories, category];
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (BoolDB) {
+      const fetchData = async () => {
+        try {
+          if(selectedCategories.length>=1) {
+              const res = await tauri.invoke<ModalBook[]>('getbookbycategory', { categorias: selectedCategories });
+              setBooks(res);
+            return;
+          }else{
+              getBooks(); 
+            return;
+          }
+        } catch (error) {
+          console.error('Error searching book:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [selectedCategories, BoolDB]);
 
   return (
     <Box>
       <div className="book-box">
         <ul className="book-list">
-          {Listbooks.map((book) => (
-            <Book 
-              key={book.urlportada}
+          {Listbooks.map((book, index) => (
+            <span  key={index} onClick={() =>openBook(book)}>
+              <Book
+              key={index}
               title={book.titulo}
-              category={book.categoria}
               imageUrl={book.urlportada}
-            />
+              />
+            </span>
+            
           ))}
         </ul>
       </div>
@@ -100,33 +170,28 @@ function Buscarlibro() {
           </button>
         </div>
         <div className="categoryBox">
-                <ul className="categoryList">
-                    <button className="categoryItem" value="Ficcion">Ficción</button>
-                    <button className="categoryItem" value="NoFiccion">No ficción</button>
-                    <button className="categoryItem" value="Terror">Terror</button>
-                    <button className="categoryItem" value="Romance">Romance</button>
-                    <button className="categoryItem" value="Aventura">Aventura</button>
-                    <button className="categoryItem" value="Fantasia">Fantasía</button>
-                    <button className="categoryItem" value="CienciaFiccion">Ciencia ficción</button>
-                    <button className="categoryItem" value="Infantil">Infantil</button>
-                    <button className="categoryItem" value="Juvenil">Juvenil</button>
-                    <button className="categoryItem" value="Misterio">Misterio</button>
-                    <button className="categoryItem" value="Poesia">Poesía</button>
-                    <button className="categoryItem" value="Biografia">Biografía</button>
-                    <button className="categoryItem" value="Autoayuda">Autoayuda</button>
-                    <button className="categoryItem" value="Cocina">Cocina</button>
-                    <button className="categoryItem" value="Historia">Historia</button>
-                    <button className="categoryItem" value="Economia">Economía</button>
-                    <button className="categoryItem" value="Politica">Política</button>
-                    <button className="categoryItem" value="Arte">Arte</button>
-                    <button className="categoryItem" value="Religion">Religión</button>
-                    <button className="categoryItem" value="Deportes">Deportes</button>
-                    <button className="categoryItem" value="Viajes">Viajes</button>
-                    <button className="categoryItem" value="Otros">Otros</button>
-                </ul>
-            </div>
+          {categoryList.length > 0?
+            <ul className="categoryList">
+            {categoryList.map((category) => (
+              <button
+                key={category}
+                className={`categoryItem ${selectedCategories.includes(category) ? 'selected' : ''}`}
+                onClick={() => handleCategoryClick(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </ul> : 
+          <h1 className='aviso'>No hay Libros/Categorias disponibles</h1> 
+          }
+        </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal} />
+      <BookModal
+        isOpen={modalook}
+        onClose={closeBook}
+        Book={book}
+      />
     </Box>
   );
 }

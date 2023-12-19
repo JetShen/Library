@@ -33,9 +33,10 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    gap: 10px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    transition: ease-in-out 0.4s;
 }
 
 .boxQuery{
@@ -72,18 +73,19 @@
 .categoryBox{
     width: 90%;
     height: 80%;
-    margin: 1em 0 0 1em;
+    margin: 1em 0 0 0.2em;
     overflow-y: auto;
 }
 
 .categoryList{
+    display: flex;
     text-align: center;
     width: 100%;
     list-style: none;
     padding: 0;
     margin: 0;
     column-count: 3;
-    column-gap: 0.5em;
+    column-gap: 0.32em;
 }
 
 .categoryItem{
@@ -106,5 +108,11 @@
 .categoryItem:focus {
     outline: none;
     box-shadow: 0px 10px 20px -4px rgba(0, 0, 255, 0.5);
+}
 
-  }
+.categoryItem.selected{
+    transition: ease-in-out 0.4s;
+    background-color: rgb(0, 0, 255);
+    box-shadow: 0px 10px 20px -4px rgba(0, 0, 255, 0.5);
+    scale: 1.1;
+}

@@ -7,7 +7,8 @@ pub struct Book {
     urlportada: String,
     titulo: String,
     autor: String,
-    categoria: String,
+    sinopsis: String,
+    categoria: Vec<String>,
     numerocopias: i32,
     ubicacion: String
 }
@@ -21,9 +22,40 @@ impl Serialize for Book {
         state.serialize_field("urlportada", &self.urlportada)?;
         state.serialize_field("titulo", &self.titulo)?;
         state.serialize_field("autor", &self.autor)?;
+        state.serialize_field("sinopsis", &self.sinopsis)?;
         state.serialize_field("categoria", &self.categoria)?;
         state.serialize_field("numerocopias", &self.numerocopias)?;
         state.serialize_field("ubicacion", &self.ubicacion)?;
+        state.end()
+    }
+}
+
+pub struct BookCategory {
+    isbn: String,
+    urlportada: String,
+    titulo: String,
+    autor: String,
+    sinopsis: String,
+    categoria: Vec<String>,
+    numerocopias: i32,
+    ubicacion: String,
+    coincidencias: i32
+}
+impl Serialize for BookCategory {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("BookCategory", 9)?;
+        state.serialize_field("isbn", &self.isbn)?;
+        state.serialize_field("urlportada", &self.urlportada)?;
+        state.serialize_field("titulo", &self.titulo)?;
+        state.serialize_field("autor", &self.autor)?;
+        state.serialize_field("sinopsis", &self.sinopsis)?;
+        state.serialize_field("categoria", &self.categoria)?;
+        state.serialize_field("numerocopias", &self.numerocopias)?;
+        state.serialize_field("ubicacion", &self.ubicacion)?;
+        state.serialize_field("coincidencias", &self.coincidencias)?;
         state.end()
     }
 }
@@ -71,19 +103,27 @@ pub fn getuser(rut: String) -> bool {
 #[tauri::command]
 pub fn getallbooks() -> Vec<Book> {
     let conn = conn();
-    let mut stmt = conn.prepare("SELECT * FROM Libros").unwrap();
+    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.Sinopsis, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+    AS Categorias 
+    FROM Libros 
+    JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN 
+    JOIN Categoria ON LibroCategoria.Categoria_ID = Categoria.ID 
+    GROUP BY Libros.ISBN").unwrap();
+
     let result = stmt.query_map([], |row| {
         Ok(Book {
             isbn: row.get(0)?,
             urlportada: row.get(1)?,
             titulo: row.get(2)?,
             autor: row.get(3)?,
-            categoria: row.get(4)?,
+            sinopsis: row.get(4)?,
             numerocopias: row.get(5)?,
             ubicacion: row.get(6)?,
+            categoria: vec![row.get(7)?],
         })
     })
     .unwrap();
+
     let mut books: Vec<Book> = Vec::new();
     for book in result {
         books.push(book.unwrap());
@@ -91,29 +131,100 @@ pub fn getallbooks() -> Vec<Book> {
     books
 }
 
+#[tauri::command]
+pub fn getallcategory() -> Vec<String> {
+    let conn = conn();
+    let mut stmt = conn.prepare("SELECT Nombre FROM Categoria").unwrap();
+    let result = stmt.query_map([], |row| {
+        Ok(row.get(0)?)
+    })
+    .unwrap();
+
+    let mut categorias: Vec<String> = Vec::new();
+    for categoria in result {
+        categorias.push(categoria.unwrap());
+    }
+    categorias
+}
 
 #[tauri::command]
 pub fn getbook(titulo: String) -> Vec<Book> {
     let conn = conn();
-    let mut stmt = conn.prepare("SELECT * FROM Libros WHERE Titulo LIKE '%' || ?1 || '%'").unwrap();
+    let mut stmt = conn.prepare("SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.Sinopsis, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+    AS Categorias 
+    FROM Libros 
+    JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN 
+    JOIN Categoria ON LibroCategoria.Categoria_ID = Categoria.ID 
+    WHERE Libros.Titulo LIKE '%' || ?1 || '%' 
+    GROUP BY Libros.ISBN ").unwrap();
+
     let result = stmt.query_map([titulo], |row| {
         Ok(Book {
             isbn: row.get(0)?,
             urlportada: row.get(1)?,
             titulo: row.get(2)?,
             autor: row.get(3)?,
-            categoria: row.get(4)?,
+            sinopsis: row.get(4)?,
             numerocopias: row.get(5)?,
             ubicacion: row.get(6)?,
+            categoria: vec![row.get(7)?],
         })
     })
     .unwrap();
+
     let mut books: Vec<Book> = Vec::new();
     for book in result {
         books.push(book.unwrap());
     }
     books
 }
+
+#[tauri::command]
+pub fn getbookbycategory(categorias: Vec<String>) -> Vec<Book> {
+    let conn = conn();
+
+    let query = format!(
+        "SELECT Libros.ISBN, Libros.url_Portada, Libros.Titulo, Libros.Autor, Libros.Sinopsis, Libros.NumeroCopias, Libros.Ubicacion, GROUP_CONCAT(Categoria.Nombre, ', ')
+        AS Categorias
+        FROM Libros
+        JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN
+        JOIN Categoria ON LibroCategoria.Categoria_ID = Categoria.ID
+        WHERE Libros.ISBN IN (
+            SELECT Libros.ISBN
+            FROM Libros
+            JOIN LibroCategoria ON Libros.ISBN = LibroCategoria.Libro_ISBN
+            JOIN Categoria ON LibroCategoria.Categoria_ID = Categoria.ID
+            WHERE Categoria.Nombre IN ({})
+            GROUP BY Libros.ISBN
+            HAVING COUNT(DISTINCT Categoria.Nombre) >= {}
+        )
+        GROUP BY Libros.ISBN, Libros.Titulo",
+        categorias.iter().map(|cate| format!("'{}'", cate).to_string()).collect::<Vec<_>>().join(", "),
+        categorias.len()
+    );
+
+    let mut stmt = conn.prepare(&query).unwrap();
+
+    let result = stmt.query_map([], |row| {
+        Ok(Book {
+            isbn: row.get(0)?,
+            urlportada: row.get(1)?,
+            titulo: row.get(2)?,
+            autor: row.get(3)?,
+            sinopsis: row.get(4)?,
+            numerocopias: row.get(5)?,
+            ubicacion: row.get(6)?,
+            categoria: vec![row.get(7)?],
+        })
+    }).unwrap();
+
+    let mut books: Vec<Book> = Vec::new();
+    for book in result {
+        books.push(book.unwrap());
+    }
+    books
+}
+
 
 #[tauri::command]
 pub fn getallloan() ->Vec<Prestamo> {
