@@ -5,9 +5,9 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 import '../style/prestamo.css';
 
 
-function Prestamo({idPrestamo , rut, titulo, fechaTermino, imageUrl, setRmvID } 
+function Prestamo({idPrestamo , rut, titulo, fechaInicio, fechaTermino, imageUrl, setRmvID, nombre, correo } 
                       : 
-                  {idPrestamo:number ,rut: string, titulo: string, fechaTermino: string, imageUrl: string, setRmvID: any } ) {
+                  {idPrestamo:number ,rut: string, titulo: string, fechaInicio: string, fechaTermino: string, imageUrl: string, setRmvID: any, nombre: string, correo: string } ) {
   const [backgroundStyle, setBackgroundStyle] = useState<string>('');
 
   const handleExist = async () => {
@@ -31,12 +31,26 @@ function Prestamo({idPrestamo , rut, titulo, fechaTermino, imageUrl, setRmvID }
 
   const eliminarPrestamo = async () => {
     try {
-      const res = await tauri.invoke('removeloan', { idprestamo: idPrestamo });
+      await tauri.invoke('removeloan', { idprestamo: idPrestamo });
       alert("Préstamo eliminado correctamente.");
       setRmvID(idPrestamo);
     } catch (error) {
       alert("Error al eliminar préstamo.");
       console.error("Error al eliminar préstamo:", error);
+    }
+  };
+
+  const correoTest = async () => {
+    console.log("correoTest");
+    console.log({nombre, correo, titulo, rut, fechaInicio, fechaTermino})
+    let fechaprestamo = fechaInicio;
+    let fechavencimiento = fechaTermino;
+    try {
+      await tauri.invoke('send_email', {nombre, correo, titulo, rut, fechaprestamo, fechavencimiento});
+      alert("Correo enviado correctamente.");
+    } catch (error) {
+      alert("Error al enviar correo.");
+      console.error("Error al enviar correo:", error);
     }
   };
 
@@ -48,7 +62,10 @@ function Prestamo({idPrestamo , rut, titulo, fechaTermino, imageUrl, setRmvID }
           <p className='rut'>Rut:{rut}</p>
           <p className='fecha'>Fecha:{fechaTermino}</p>
         </span>
-        <button className='btnDevolver' onClick={eliminarPrestamo} >Devolver</button>
+        <div className="botonesPrestamo">
+          <button className='btnDevolver' onClick={eliminarPrestamo}>Devolver</button>
+          <button className='btnDevolver' onClick={correoTest}>Adverir</button>
+        </div>
       </div>
     </div>
   );
