@@ -54,6 +54,10 @@ function Prestamo({idPrestamo , rut, titulo, fechaInicio, fechaTermino, imageUrl
     }
   };
 
+  const buildFix = {
+    display: 'none'
+  }
+
   return (
     <div className="item" style={{ backgroundImage: backgroundStyle }}>
       <div className="info-prestamo">
@@ -63,8 +67,8 @@ function Prestamo({idPrestamo , rut, titulo, fechaInicio, fechaTermino, imageUrl
           <p className='fecha'>Fecha:{fechaTermino}</p>
         </span>
         <div className="botonesPrestamo">
+          <button className='btnDevolver' onClick={correoTest} style={buildFix}>Adverir</button>
           <button className='btnDevolver' onClick={eliminarPrestamo}>Devolver</button>
-          <button className='btnDevolver' onClick={correoTest}>Adverir</button>
         </div>
       </div>
     </div>

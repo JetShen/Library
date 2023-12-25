@@ -3,10 +3,12 @@ import { tauri } from '@tauri-apps/api';
 import { writeBinaryFile } from '@tauri-apps/api/fs';
 import { Dir } from '@tauri-apps/api/fs';
 import { currenPath } from '../script/gobal';
+import { useState } from 'react';
 
 
 
 function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
+  const [confirm, setConfirm] = useState(false);
   if (!isOpen) return null;
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,13 +44,29 @@ function Modal({ isOpen, onClose }:{isOpen:boolean, onClose:()=>void}) {
     const parsed = parseInt(numero_copias as string);
     const portada = `${isbn}_portada.png`
     const ubicacion = data.get('Ubicacion');
+
     try{
-      await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, sinopsis: sinopsis, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion});
-      alert("Libro agregado correctamente");
-      onClose();
+      let connfirm = await tauri.invoke('verifybook', {isbn: isbn});
+      if(connfirm){
+        setConfirm(true);
+        alert("El libro ya existe, verifique el ISBN");
+        return;
+      }
     }catch(error){
-      alert("Error al agregar libro");
+      alert("Error al verificar libro");
+      return;
     }
+
+    if(!confirm){
+      try{
+        await tauri.invoke('addbook', {isbn: isbn, urlportada: portada, titulo: titulo, autor: autor, sinopsis: sinopsis, categoria: categoria, numerocopias: parsed, ubicacion: ubicacion});
+        alert("Libro agregado correctamente");
+        onClose();
+      }catch(error){
+        alert("Error al agregar libro");
+      }
+    }
+    
   }
 
 

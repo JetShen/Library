@@ -6,7 +6,7 @@ import ModalUser from "./modaluser";
 
 function Generar() {
   const [isModalUOpen, setModalUOpen] = useState(false);
-
+  const [exist, setExist] = useState(false);
   const openModalU = () => {
     setModalUOpen(true);
   };
@@ -59,11 +59,25 @@ function Generar() {
       rutbibliotecario: data.get('rutbibliotecario') as string,
     };
 
-    try {
+    try{
+      let connfirmL = await tauri.invoke('verifybook', {isbn: prestamo.isbn});
+      if(!connfirmL){
+        setExist(true);
+        alert("El libro no existe, verifique el ISBN");
+        return;
+      }
+    }catch(error){
+      alert("Error al verificar libro");
+      return;
+    }
+
+    if(!exist){
+      try {
         await tauri.invoke('addloan', { rutusuario: prestamo.rut, nombrelibro: prestamo.nombrelibro, isbn: prestamo.isbn, fechaprestamo: prestamo.fechaprestamo, terminoprestamo: prestamo.terminoprestamo, rutbibliotecario: prestamo.rutbibliotecario });
         alert("Préstamo agregado correctamente.");
-    } catch (error) {
+      } catch (error) {
         alert("Error al agregar préstamo.");
+      }
     }
   }
 

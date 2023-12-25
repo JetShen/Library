@@ -11,10 +11,11 @@ pub fn addbook(isbn: String, urlportada: String, titulo: String, sinopsis:String
     ).unwrap();
 
     for categoria in categoria.iter() {
-        if let Err(_) = conn.execute(
-            "INSERT OR IGNORE INTO Categoria (Nombre) VALUES (?)",
-            [categoria],
+        if let Err(err) = conn.execute(
+            "INSERT INTO Categoria (Nombre) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM Categoria WHERE Nombre = ?)",
+            [categoria, categoria],
         ) {
+            eprintln!("Error al insertar categoría {}: {}", categoria, err);
             return Err(format!("Error al insertar categoría {}", categoria));
         }
     }
@@ -40,7 +41,6 @@ pub fn addbook(isbn: String, urlportada: String, titulo: String, sinopsis:String
     }
 
     Ok(())
-
 }
 
 #[tauri::command]

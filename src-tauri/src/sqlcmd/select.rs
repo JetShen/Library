@@ -184,6 +184,30 @@ pub fn getbook(titulo: String) -> Vec<Book> {
 }
 
 #[tauri::command]
+pub fn verifybook(isbn: String) -> bool {
+    let conn = conn();
+    let mut stmt = conn.prepare("SELECT * FROM Libros WHERE ISBN = ?1").unwrap();
+    let result = stmt.query_row([isbn], |_| Ok(()));
+    println!("{:?}", result);
+    match result {
+        Ok(_) => true,
+        Err(_) => false
+    }
+}
+
+#[tauri::command]
+pub fn verifyuser(rut: String) -> bool {
+    let conn = conn();
+    let mut stmt = conn.prepare("SELECT * FROM Usuario WHERE Rut = ?1").unwrap();
+    let result = stmt.query_row([rut], |_| Ok(()));
+    println!("{:?}", result);
+    match result {
+        Ok(_) => true,
+        Err(_) => false
+    }
+}
+
+#[tauri::command]
 pub fn getbookbycategory(categorias: Vec<String>) -> Vec<Book> {
     let conn = conn();
 
