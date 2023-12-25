@@ -6,8 +6,9 @@ use std::fs;
 
 use crate::sqlcmd::{
     insert::{addbook, adduser, addloan}, 
-    select::{getuser, getallbooks, getbook, getbookbycategory, getloan, getallloan, getallcategory},
-    delete::removeloan
+    select::{getuser, getallbooks, getbook, getbookbycategory, getloan, getallloan, getallcategory, verifyuser, verifybook},
+    delete::removeloan,
+    email::send_email
 };
 
 mod sqlcmd;
@@ -48,9 +49,9 @@ fn verifypath(path: String) -> bool {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![currentpath, verifypath, bookdir, addbook, adduser,
+        .invoke_handler(tauri::generate_handler![currentpath, verifypath, bookdir, addbook, adduser, verifyuser, verifybook,
                                                 addloan, getuser, getallbooks, getbook, getbookbycategory,
-                                                getloan, getallloan, removeloan, getallcategory])
+                                                getloan, getallloan, removeloan, getallcategory, send_email])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

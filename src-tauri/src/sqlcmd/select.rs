@@ -69,6 +69,8 @@ pub struct Prestamo {
     terminoprestamo: String,
     rutbibliotecario: String,
     urlportada: String,
+    nombre: String,
+    correo: String,
 }
 impl Serialize for Prestamo {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -84,6 +86,8 @@ impl Serialize for Prestamo {
         state.serialize_field("terminoprestamo", &self.terminoprestamo)?;
         state.serialize_field("rutbibliotecario", &self.rutbibliotecario)?;
         state.serialize_field("urlportada", &self.urlportada)?;
+        state.serialize_field("nombre", &self.nombre)?;
+        state.serialize_field("correo", &self.correo)?;
         state.end()
     }
 }
@@ -180,6 +184,30 @@ pub fn getbook(titulo: String) -> Vec<Book> {
 }
 
 #[tauri::command]
+pub fn verifybook(isbn: String) -> bool {
+    let conn = conn();
+    let mut stmt = conn.prepare("SELECT * FROM Libros WHERE ISBN = ?1").unwrap();
+    let result = stmt.query_row([isbn], |_| Ok(()));
+    println!("{:?}", result);
+    match result {
+        Ok(_) => true,
+        Err(_) => false
+    }
+}
+
+#[tauri::command]
+pub fn verifyuser(rut: String) -> bool {
+    let conn = conn();
+    let mut stmt = conn.prepare("SELECT * FROM Usuario WHERE Rut = ?1").unwrap();
+    let result = stmt.query_row([rut], |_| Ok(()));
+    println!("{:?}", result);
+    match result {
+        Ok(_) => true,
+        Err(_) => false
+    }
+}
+
+#[tauri::command]
 pub fn getbookbycategory(categorias: Vec<String>) -> Vec<Book> {
     let conn = conn();
 
@@ -230,9 +258,10 @@ pub fn getbookbycategory(categorias: Vec<String>) -> Vec<Book> {
 pub fn getallloan() ->Vec<Prestamo> {
     let conn = conn();
     let mut stmt = conn.prepare(
-        "SELECT Prestamo.idPrestamo, Prestamo.Usuario_Rut, Prestamo.NombreLibro, Prestamo.ISBN, Prestamo.FechaPrestamo, Prestamo.TerminoPrestamo, Prestamo.RutBibliotecario, Libros.url_Portada
-         FROM Prestamo
-         JOIN Libros ON Prestamo.ISBN = Libros.ISBN",
+        "SELECT Prestamo.idPrestamo, Prestamo.Usuario_Rut, Prestamo.NombreLibro, Prestamo.ISBN, Prestamo.FechaPrestamo, Prestamo.TerminoPrestamo, Prestamo.RutBibliotecario, Libros.url_Portada, Usuario.Nombre, Usuario.Correo
+        FROM Prestamo
+        JOIN Libros ON Prestamo.ISBN = Libros.ISBN
+        JOIN Usuario ON Prestamo.Usuario_Rut = Usuario.Rut",
     ).unwrap();
     let result = stmt.query_map([], |row| {
         Ok(Prestamo {
@@ -244,6 +273,8 @@ pub fn getallloan() ->Vec<Prestamo> {
             terminoprestamo: row.get(5)?,
             rutbibliotecario: row.get(6)?,
             urlportada: row.get(7)?,
+            nombre: row.get(8)?,
+            correo: row.get(9)?,
         })
     })
     .unwrap();
@@ -258,10 +289,11 @@ pub fn getallloan() ->Vec<Prestamo> {
 pub fn getloan(rut: String) -> Vec<Prestamo> {
     let conn = conn();
     let mut stmt = conn.prepare(
-        "SELECT Prestamo.idPrestamo, Prestamo.Usuario_Rut, Prestamo.NombreLibro, Prestamo.ISBN, Prestamo.FechaPrestamo, Prestamo.TerminoPrestamo, Prestamo.RutBibliotecario, Libros.url_Portada
-         FROM Prestamo
-         JOIN Libros ON Prestamo.ISBN = Libros.ISBN
-         WHERE Prestamo.Usuario_Rut = ?1",
+        "SELECT Prestamo.idPrestamo, Prestamo.Usuario_Rut, Prestamo.NombreLibro, Prestamo.ISBN, Prestamo.FechaPrestamo, Prestamo.TerminoPrestamo, Prestamo.RutBibliotecario, Libros.url_Portada, Usuario.Nombre, Usuario.Correo
+        FROM Prestamo
+        JOIN Libros ON Prestamo.ISBN = Libros.ISBN
+        JOIN Usuario ON Prestamo.Usuario_Rut = Usuario.Rut
+        WHERE Prestamo.Usuario_Rut = ?1",
     ).unwrap();
 
     let result = stmt.query_map(params![rut], |row| {
@@ -274,6 +306,8 @@ pub fn getloan(rut: String) -> Vec<Prestamo> {
             terminoprestamo: row.get(5)?,
             rutbibliotecario: row.get(6)?,
             urlportada: row.get(7)?,
+            nombre: row.get(8)?,
+            correo: row.get(9)?,
         })
     })
     .unwrap();

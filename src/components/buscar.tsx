@@ -13,6 +13,8 @@ type Prestamos = {
     rutbibliotecario: string;
     urlportada: string;
     usuario_rut: string;
+    nombre: string;
+    correo: string;
 }
 
 
@@ -24,6 +26,7 @@ function Buscar(){
         try{
             const resLoan = await tauri.invoke<Prestamos[]>('getallloan');
             setPrestamos(resLoan);
+            console.log(resLoan);
         }catch(error){
             console.error("Error al obtener préstamos:", error);
         }
@@ -72,8 +75,11 @@ function Buscar(){
                             idPrestamo={prestamo.idprestamo}
                             rut={prestamo.usuario_rut}
                             titulo={prestamo.nombrelibro}
+                            fechaInicio={prestamo.fechaprestamo}
                             fechaTermino={prestamo.terminoprestamo}
                             imageUrl={prestamo.urlportada}
+                            nombre={prestamo.nombre}
+                            correo={prestamo.correo}
                             setRmvID = {setRmvID}
                             />
                         ))}         

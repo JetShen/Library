@@ -1,6 +1,8 @@
 import { tauri } from '@tauri-apps/api';
+import { useState } from 'react';
 
 function ModalUser({ isOpenU, onCloseU }:{isOpenU:boolean, onCloseU:()=>void}){
+  const [verifyUser, setVerifyUser] = useState(false);
   if (!isOpenU) return null;
 
     const handleAddU = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -13,9 +15,30 @@ function ModalUser({ isOpenU, onCloseU }:{isOpenU:boolean, onCloseU:()=>void}){
     const telefono = data.get('telefono');
     const direccion = data.get('direccion');
 
-    await tauri.invoke('adduser', {rut: rut, nombre: nombre, apellido: apellido, correo: email, telefono: telefono, direccion: direccion});
-    alert("Usuario agregado correctamente");
-    onCloseU();
+    try{
+      let connfirm = await tauri.invoke('verifyuser', {rut: rut});
+      if(connfirm){
+        setVerifyUser(true);
+        alert("El usuario ya existe, verifique el rut");
+        return;
+      }
+    }catch(error){
+      alert("Error al verificar usuario");
+      return;
+    }
+
+    if(!verifyUser){
+      try{
+        await tauri.invoke('adduser', {rut: rut, nombre: nombre, apellido: apellido, correo: email, telefono: telefono, direccion: direccion});
+        alert("Usuario agregado correctamente");
+        onCloseU();
+      }catch(error){
+        console.log(error);
+        alert("Error al agregar usuario");
+        return;
+      }
+    }
+    
   }
 
   return(
